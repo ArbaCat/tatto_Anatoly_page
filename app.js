@@ -297,7 +297,6 @@ form.addEventListener('submit', event => {
   const message = `Ahoj Anatoly,\n\nvolám sa ${data.get('name').trim()}. Chcem sa poradiť o tetovaní.\n\n${data.get('idea').trim()}\n\nMôj kontakt: ${data.get('contact').trim()}\n\nĎakujem!`;
   $('#prepared-message').value = message;
   // The addresses live in the HTML (they also work without JS); here we only add the text.
-  $('#email-message').href = `${baseHref($('#email-message'))}?subject=${encodeURIComponent('Konzultácia — Anatoly Tsar')}&body=${encodeURIComponent(message)}`;
   $('#whatsapp-message').href = `${baseHref($('#whatsapp-message'))}?text=${encodeURIComponent(message)}`;
   form.hidden = true; result.hidden = false; $('#copy-status').textContent = ''; $('#result-title').focus();
   stagger([...result.children], 0, 45, 10);

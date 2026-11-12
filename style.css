@@ -111,7 +111,6 @@ button svg{pointer-events:none}
 .scroll-cue{position:absolute;right:var(--pad);bottom:82px;width:44px;height:52px;display:grid;place-items:center}
 .scroll-cue::before{content:'';position:absolute;width:16px;height:32px;border:1px solid #b5a384;border-radius:16px;transition:border-color .35s var(--ease-out)}
 .scroll-cue span{width:3px;height:6px;background:#e2c89e;border-radius:2px;transition:transform .5s var(--ease-out)}
-.hero-note{position:absolute;right:var(--pad);bottom:34px;font-size:9px;letter-spacing:.2em;color:#aaa99b}
 
 /* Selected works */
 /* Height follows the screen so "Pozrieť práce" lands with the arrows and caption in view
@@ -308,7 +307,7 @@ textarea{resize:vertical;min-height:110px}
   .location{display:none}
   .hero-place{font-size:13px;margin-top:17px}
   .hero-copy .text-link{margin-top:19px}
-  .hero-note,.scroll-cue{display:none}
+  .scroll-cue{display:none}
   .spotlight{height:87svh;min-height:480px;max-height:850px}
   .spotlight-top{top:24px}
   .spotlight-photo>img{padding:35px 0 105px;mask-image:linear-gradient(0deg,transparent,#000 20%,#000 90%,transparent)}
@@ -352,6 +351,9 @@ textarea{resize:vertical;min-height:110px}
   .booking-dialog{max-width:100%;width:100%;max-height:100dvh;height:100dvh;margin:0;border:0}
   .booking-content{padding:12px 24px 40px}
   .booking-content>h2{font-size:32px}
+  /* WhatsApp (the one channel that takes the text itself) on top, Instagram and Facebook as a pair. */
+  .message-actions{grid-template-columns:1fr 1fr}
+  .message-actions .pill:first-child{grid-column:1/-1}
 }
 
 /* Phones held sideways and other very short screens: the whole hero fits in one screen,
@@ -362,7 +364,7 @@ textarea{resize:vertical;min-height:110px}
   .hero-shade{background:linear-gradient(90deg,#0b0c09d9,transparent 60%),linear-gradient(0deg,#0b0c09,transparent 40%)}
   .hero-copy{left:var(--pad);right:auto;bottom:24px;max-width:46%}
   .hero h1{font-size:28px;max-width:14ch}
-  .location,.hero-note,.scroll-cue{display:none}
+  .location,.scroll-cue{display:none}
   .hero-place{margin-top:12px;font-size:13px}
   .hero-copy .text-link{margin-top:8px}
   .spotlight{height:100svh;min-height:300px}
