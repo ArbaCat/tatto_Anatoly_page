@@ -98,8 +98,8 @@ button svg{pointer-events:none}
    (object-position keeps him in view); on screens wider than the frame its width is capped by
    the height, so it is never blown up and cropped top and bottom. */
 .hero{--hero-h:clamp(560px,100svh,1300px);height:var(--hero-h);position:relative;isolation:isolate;overflow:hidden;background:#080a07}
-.hero-ambience{position:absolute;inset:-8%;background:linear-gradient(90deg,#10110ed9,#10110e55),url('assets/hero.jpg') 80% 40%/cover;filter:blur(35px);opacity:.48;z-index:-3}
-.hero-photo{position:absolute;right:0;top:0;width:min(100%,calc(var(--hero-h) * 2.65));height:100%;object-fit:cover;object-position:85% 40%;mask-image:linear-gradient(90deg,transparent,#000 12%),linear-gradient(0deg,transparent,#000 22%);mask-composite:intersect;z-index:-2}
+.hero-ambience{position:absolute;inset:-8%;background:linear-gradient(90deg,#10110ed9,#10110e55),url('assets/hero-blur.jpg') 90% 40%/cover;filter:blur(35px);opacity:.48;z-index:-3}
+.hero-photo{position:absolute;right:0;top:0;width:min(100%,calc(var(--hero-h) * 2.65));height:100%;object-fit:cover;object-position:100% 40%;mask-image:linear-gradient(90deg,transparent,#000 12%),linear-gradient(0deg,transparent,#000 22%);mask-composite:intersect;z-index:-2}
 .hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,#0b0c09bf,transparent 65%),linear-gradient(0deg,#0b0c09,transparent 38%,transparent 84%,#0b0c0955);z-index:-1}
 .hero-copy{position:absolute;left:var(--pad);bottom:86px;max-width:600px}
 .location,.eyebrow{font-size:11px;letter-spacing:.18em;line-height:1.7;color:var(--muted)}
@@ -279,7 +279,7 @@ textarea{resize:vertical;min-height:110px}
 }
 @media(max-width:900px){
   .hero{--hero-h:clamp(560px,100svh,1300px)}
-  .hero-photo{width:100%;object-position:83% 40%;mask-image:linear-gradient(90deg,transparent,#000 12%),linear-gradient(180deg,#000 62%,transparent 82%)}
+  .hero-photo{width:100%;object-position:98% 40%;mask-image:linear-gradient(90deg,transparent,#000 12%),linear-gradient(180deg,#000 62%,transparent 82%)}
   .hero h1{max-width:14ch}
   .hero-copy{max-width:500px}
   .hero-shade{background:linear-gradient(90deg,#0b0c0980,transparent 65%),linear-gradient(0deg,#0b0c09,transparent 70%)}
@@ -300,7 +300,7 @@ textarea{resize:vertical;min-height:110px}
   .menu-button{display:flex;font-size:13px}
   /* Exactly one screen (svh = with the browser bars shown), so the next section never peeks in. */
   .hero{--hero-h:clamp(520px,100svh,1000px)}
-  .hero-photo{height:72%;width:100%;right:0;object-fit:cover;object-position:83% 30%;mask-image:linear-gradient(0deg,transparent 0%,#000 38%,#000 100%)}
+  .hero-photo{height:72%;width:100%;right:0;object-fit:cover;object-position:96% 30%;mask-image:linear-gradient(0deg,transparent 0%,#000 38%,#000 100%)}
   .hero-ambience{opacity:.25}
   .hero-shade{background:linear-gradient(0deg,#0b0c09,transparent 65%,#0b0c0960)}
   .hero-copy{left:24px;right:24px;bottom:50px}
@@ -358,7 +358,7 @@ textarea{resize:vertical;min-height:110px}
    photo on the right, text on the left. */
 @media(orientation:landscape) and (max-height:520px){
   .hero{--hero-h:max(100svh,340px)}
-  .hero-photo{width:min(100%,calc(var(--hero-h) * 2.65));height:100%;object-position:85% 30%;mask-image:linear-gradient(90deg,transparent,#000 12%),linear-gradient(0deg,transparent,#000 25%)}
+  .hero-photo{width:min(100%,calc(var(--hero-h) * 2.65));height:100%;object-position:100% 30%;mask-image:linear-gradient(90deg,transparent,#000 12%),linear-gradient(0deg,transparent,#000 25%)}
   .hero-shade{background:linear-gradient(90deg,#0b0c09d9,transparent 60%),linear-gradient(0deg,#0b0c09,transparent 40%)}
   .hero-copy{left:var(--pad);right:auto;bottom:24px;max-width:46%}
   .hero h1{font-size:28px;max-width:14ch}

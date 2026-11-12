@@ -67,7 +67,13 @@
   <main id="main">
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="hero-ambience" aria-hidden="true"></div>
-      <img class="hero-photo" src="assets/hero.jpg" alt="Anatoly sústredený pri tetovaní pod štúdiovou lampou" fetchpriority="high">
+      <!-- One wide frame (2.65:1) in three widths. With object-fit: cover the drawn width is about
+           the photo height × 2.65, hence sizes in vh (phones: photo is 72% of the screen height).
+           Phones stop at 2560 px: the 4K detail is not visible there and costs ~220 KB. -->
+      <picture>
+        <source media="(max-width:640px)" srcset="assets/hero-1920.jpg 1920w, assets/hero-2560.jpg 2560w" sizes="191vh">
+        <img class="hero-photo" src="assets/hero-1920.jpg" srcset="assets/hero-1920.jpg 1920w, assets/hero-2560.jpg 2560w, assets/hero-3840.jpg 3840w" sizes="265vh" width="3840" height="1448" alt="Anatoly sústredený pri tetovaní pod štúdiovou lampou" fetchpriority="high">
+      </picture>
       <div class="hero-shade" aria-hidden="true"></div>
       <div class="hero-copy">
         <p class="location" lang="en">TATTOO ARTIST & PAINTER</p>
