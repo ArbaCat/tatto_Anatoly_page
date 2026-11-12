@@ -133,6 +133,7 @@ function openDialog(dialog){
   }
   // Switching from one dialog to another keeps the backdrop steady.
   dialog.classList.toggle('is-swap', others.length > 0);
+  dialog._openedAt = performance.now();
   if(!dialog.open) dialog.showModal();
   document.body.classList.add('modal-open'); updateBar();
 }
@@ -164,12 +165,23 @@ for(const dialog of $$('dialog')){
   dialog.querySelector('.close').addEventListener('click', () => closeDialog(dialog));
   dialog.addEventListener('cancel', event => { event.preventDefault(); closeDialog(dialog); });
   dialog.addEventListener('close', () => afterClose(dialog));
-  dialog.addEventListener('click', event => {
-    if(event.target !== dialog) return;
+  // Close on the backdrop only when the press both started and ended there: dragging a text
+  // selection out of a field must not close the form, and the second click of a double click
+  // that opened the dialog must not close it again.
+  const onBackdrop = event => {
+    if(event.target !== dialog) return false;
     const r = dialog.getBoundingClientRect();
-    if(event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) closeDialog(dialog);
+    return event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom;
+  };
+  let pressedBackdrop = false;
+  dialog.addEventListener('pointerdown', event => { pressedBackdrop = onBackdrop(event); });
+  dialog.addEventListener('click', event => {
+    const pressed = pressedBackdrop; pressedBackdrop = false;
+    if(!pressed || !onBackdrop(event) || performance.now() - (dialog._openedAt || 0) < 350) return;
+    closeDialog(dialog);
   });
 }
+const plainKey = event => !(event.altKey || event.metaKey || event.ctrlKey || event.shiftKey);
 $('.menu-button').addEventListener('click', () => {
   openDialog(menu);
   stagger($$('.menu-dialog nav a, .menu-dialog > .pill'), 90, 55, 18);
@@ -194,6 +206,7 @@ function showFeatured(index, direction=0){
 $('#previous-work').addEventListener('click', () => showFeatured(featuredIndex - 1, -1));
 $('#next-work').addEventListener('click', () => showFeatured(featuredIndex + 1, 1));
 $('#prace').addEventListener('keydown', event => {
+  if(!plainKey(event)) return; // Alt/Cmd+arrow is browser navigation, not "next work"
   if(event.key === 'ArrowRight'){ event.preventDefault(); showFeatured(featuredIndex + 1, 1); }
   if(event.key === 'ArrowLeft'){ event.preventDefault(); showFeatured(featuredIndex - 1, -1); }
 });
@@ -234,6 +247,8 @@ function showGallery(index, direction=0){
   activate(galleryTextItems, galleryIndex, direction, {container:galleryText});
   activate(galleryCountItems, galleryIndex, direction, {enter:6, container:galleryCount});
   gallery.setAttribute('aria-label', work.title);
+  // The page's live region is inert behind the modal, so the dialog has its own.
+  if(direction) $('#gallery-status').textContent = `${counter(galleryIndex)} — ${work.title}`;
 }
 function openGallery(index){
   showGallery(index);
@@ -250,6 +265,7 @@ for(const button of $$('[data-work]')) button.addEventListener('click', () => op
 $('#gallery-prev').addEventListener('click', () => showGallery(galleryIndex - 1, -1));
 $('#gallery-next').addEventListener('click', () => showGallery(galleryIndex + 1, 1));
 gallery.addEventListener('keydown', event => {
+  if(!plainKey(event)) return;
   if(event.key === 'ArrowRight'){ event.preventDefault(); showGallery(galleryIndex + 1, 1); }
   if(event.key === 'ArrowLeft'){ event.preventDefault(); showGallery(galleryIndex - 1, -1); }
 });
@@ -378,6 +394,7 @@ let scrollJob = null;
 function stopScroll(){
   if(!scrollJob) return;
   cancelAnimationFrame(scrollJob.raf); scrollJob = null; headerLock = null;
+  travel = 0; travelDirection = 0;
 }
 for(const type of ['wheel', 'touchstart', 'pointerdown', 'keydown']) window.addEventListener(type, stopScroll, {passive:true, capture:true});
 const easeInOut = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
@@ -395,8 +412,10 @@ function scrollToY(y, done){
   };
   job.raf = requestAnimationFrame(step);
 }
+// A malformed hash (e.g. "#%") makes decodeURIComponent throw; treat it as "no target".
+const byHash = hash => { try{ return document.getElementById(decodeURIComponent(hash.slice(1))); }catch{ return null; } };
 function goTo(hash, {focus=false}={}){
-  const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+  const target = byHash(hash);
   if(!target) return;
   stopScroll();
   const top = target === hero ? 0 : target.getBoundingClientRect().top + window.scrollY;
@@ -410,7 +429,9 @@ function goTo(hash, {focus=false}={}){
   try{ history.replaceState(null, '', hash); }catch{} // file:// and sandboxed previews may refuse
   updateHeader();
   scrollToY(y, () => {
-    headerLock = null; lastY = window.scrollY; onScroll();
+    // Forget the distance the programmatic scroll travelled, otherwise a long jump back up
+    // counts as "scrolling up" and the header slides over the section that just landed flush.
+    headerLock = null; lastY = window.scrollY; travel = 0; travelDirection = 0; onScroll();
     if(focus){
       if(!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
       target.focus({preventScroll:true});
@@ -421,7 +442,7 @@ document.addEventListener('click', event => {
   const link = event.target.closest('a[href^="#"]');
   if(!link || link.classList.contains('skip') || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   const hash = link.getAttribute('href');
-  if(hash.length < 2 || !document.getElementById(decodeURIComponent(hash.slice(1)))) return;
+  if(hash.length < 2 || !byHash(hash)) return;
   event.preventDefault();
   const options = {focus:event.detail === 0};
   if(menu.contains(link)) closeDialog(menu).then(() => goTo(hash, options));
@@ -430,8 +451,9 @@ document.addEventListener('click', event => {
 
 /* ---------- Visibility-driven bits ---------- */
 if('IntersectionObserver' in window){
-  new IntersectionObserver(entries => { heroVisible = entries[0].isIntersecting; updateBar(); }, {threshold:0}).observe(hero);
-  new IntersectionObserver(entries => { contactVisible = entries[0].isIntersecting; updateBar(); }, {threshold:0.1}).observe($('.contact'));
+  // Several entries can queue up between callbacks; the last one is the current state.
+  new IntersectionObserver(entries => { heroVisible = entries.at(-1).isIntersecting; updateBar(); }, {threshold:0}).observe(hero);
+  new IntersectionObserver(entries => { contactVisible = entries.at(-1).isIntersecting; updateBar(); }, {threshold:0.1}).observe($('.contact'));
 }
 // Content does not fade or slide in while scrolling: photos are simply there when they
 // arrive. Every image is decoded ahead of time so none of them paints in late.
