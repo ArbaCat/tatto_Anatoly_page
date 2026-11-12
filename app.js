@@ -50,6 +50,7 @@ function buildLayers(first){
   for(const work of works.slice(1)){
     const image = first.cloneNode(false);
     image.classList.remove('is-active');
+    image.fetchPriority = 'low'; // hidden until switched to; never compete with the first screen
     image.src = work.src; image.alt = work.alt;
     layers[layers.length - 1].after(image);
     layers.push(image);
@@ -480,7 +481,4 @@ const decodeAll = () => { for(const image of $$('img')) if(image.decode) image.d
 if('requestIdleCallback' in window) requestIdleCallback(decodeAll, {timeout:1200}); else setTimeout(decodeAll, 300);
 
 /* ---------- First screen ---------- */
-// The photo is on screen from the first frame; only the headline settles in.
-for(const [index, element] of $$('.hero-copy>*').entries()){
-  animateIn(element, {distance:12, duration:800, delay:120 + index*80});
-}
+// The headline's entrance lives in style.css (hero-in), so it starts with the first paint.

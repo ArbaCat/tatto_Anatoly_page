@@ -15,7 +15,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scrollbar-gutter:stable}
 html.js{scroll-behavior:auto} /* JS drives anchor scrolling with its own easing */
-body{margin:0;background:var(--bg);color:var(--paper);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;visibility:visible;animation:none} /* see the inline <style> in index.html */
 body.modal-open{overflow:hidden}
 button,input,textarea{font:inherit}
 button,a{-webkit-tap-highlight-color:transparent}
@@ -35,7 +35,10 @@ button svg{pointer-events:none}
 .skip:focus{top:15px}
 
 /* Arrow glyphs: on hover the arrow leaves in its own direction and a copy arrives from behind. */
-.arr{display:inline-flex;overflow:hidden;line-height:1;padding:.14em;margin:-.14em;flex-shrink:0;vertical-align:middle}
+/* Arial has ← → ↓ but not ↗, and iOS fills the gap from the emoji font (a blue tile).
+   All arrows come from fonts that have the whole set, as text: system UI fonts on Apple and
+   Android, Segoe UI Symbol on Windows. index.html also adds U+FE0E (text style) after each ↗. */
+.arr{display:inline-flex;overflow:hidden;line-height:1;padding:.14em;margin:-.14em;flex-shrink:0;vertical-align:middle;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI Symbol",Roboto,Arial,sans-serif;font-variant-emoji:text}
 .arr>i{display:block;font-style:normal;--dx:1.4em;--dy:-1.4em;text-shadow:calc(var(--dx) * -1) calc(var(--dy) * -1) 0 currentColor;transition:transform .55s var(--ease-out)}
 .arr--down>i{--dx:0em;--dy:1.4em}
 .arr--right>i{--dx:1.4em;--dy:0em}
@@ -293,7 +296,8 @@ textarea{resize:vertical;min-height:110px}
   .wordmark{font-size:11px;letter-spacing:.18em}
   .desktop-nav{display:none}
   .menu-button{display:flex;font-size:13px}
-  .hero{--hero-h:clamp(520px,91svh,850px)}
+  /* Exactly one screen (svh = with the browser bars shown), so the next section never peeks in. */
+  .hero{--hero-h:clamp(520px,100svh,1000px)}
   .hero-photo{height:72%;width:100%;right:0;object-fit:cover;object-position:46% 30%;mask-image:linear-gradient(0deg,transparent 0%,#000 38%,#000 100%)}
   .hero-ambience{opacity:.25}
   .hero-shade{background:linear-gradient(0deg,#0b0c09,transparent 65%,#0b0c0960)}
@@ -378,7 +382,14 @@ textarea{resize:vertical;min-height:110px}
   46%{transform:translateY(-5px);opacity:0}
   100%{transform:none;opacity:1}
 }
+/* The headline settles in from the very first styled frame. In CSS rather than JS: a script
+   runs after the first paint, so the text used to show, vanish and then fade back in. */
+@keyframes hero-in{from{opacity:0;transform:translateY(12px)}}
 @media(prefers-reduced-motion:no-preference){
+  .hero-copy>*{animation:hero-in .8s var(--ease-out) .12s backwards}
+  .hero-copy>:nth-child(2){animation-delay:.2s}
+  .hero-copy>:nth-child(3){animation-delay:.28s}
+  .hero-copy>:nth-child(4){animation-delay:.36s}
   dialog[open]{animation:dialog-enter .42s var(--ease-out)}
   dialog[open]::backdrop{animation:backdrop-enter .3s ease-out}
   dialog.is-swap[open]::backdrop{animation:none}
