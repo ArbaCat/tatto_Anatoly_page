@@ -19,11 +19,16 @@ for pattern, what in ((STYLE, 'style.css <link>'), (SCRIPT, 'app.js <script>')):
     if len(pattern.findall(html)) != 1:
         sys.exit(f'index.html: expected exactly one {what} tag')
 
+# Relative references only ("assets/x.jpg", 'assets/x.jpg', url('assets/x.jpg')). Absolute URLs such
+# as og:image ("https://…/assets/og.jpg") must stay URLs: social networks cannot read data: URIs.
+ASSET = re.compile(r'(?<![\w/.:-])assets/([\w-]+\.(jpe?g|png|svg|webp))')
+MIME = {'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'svg': 'image/svg+xml', 'webp': 'image/webp'}
+
 def inline_assets(text):
     def rep(m):
         data = base64.b64encode((src / 'assets' / m.group(1)).read_bytes()).decode()
-        return f'data:image/jpeg;base64,{data}'
-    return re.sub(r'assets/([\w-]+\.jpg)', rep, text)
+        return f'data:{MIME[m.group(2)]};base64,{data}'
+    return ASSET.sub(rep, text)
 
 html = STYLE.sub(lambda m: '<style>' + css + '</style>\n', html)
 html = SCRIPT.sub('', html)
@@ -31,7 +36,7 @@ if html.count('</body>') != 1:
     sys.exit('index.html: expected exactly one </body>')
 html = html.replace('</body>', '<script>' + js + '</script>\n</body>')
 html = inline_assets(html)
-if 'assets/' in html:
-    sys.exit('unresolved asset path (only assets/*.jpg can be inlined)')
+if re.search(r'(?<![\w/.:-])assets/', html):
+    sys.exit('unresolved relative asset path (only assets/*.jpg|png|svg|webp can be inlined)')
 out.write_text(html, encoding='utf-8')
 print(out, len(html))

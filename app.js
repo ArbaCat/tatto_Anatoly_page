@@ -295,15 +295,34 @@ form.addEventListener('submit', event => {
   const data = new FormData(form);
   const message = `Ahoj Anatoly,\n\nvolám sa ${data.get('name').trim()}. Chcem sa poradiť o tetovaní.\n\n${data.get('idea').trim()}\n\nMôj kontakt: ${data.get('contact').trim()}\n\nĎakujem!`;
   $('#prepared-message').value = message;
-  $('#email-message').href = `mailto:info@madramtattoo.sk?subject=${encodeURIComponent('Konzultácia — Anatoly Tsar')}&body=${encodeURIComponent(message)}`;
-  form.hidden = true; result.hidden = false; $('#result-title').focus();
+  // The addresses live in the HTML (they also work without JS); here we only add the text.
+  $('#email-message').href = `${baseHref($('#email-message'))}?subject=${encodeURIComponent('Konzultácia — Anatoly Tsar')}&body=${encodeURIComponent(message)}`;
+  $('#whatsapp-message').href = `${baseHref($('#whatsapp-message'))}?text=${encodeURIComponent(message)}`;
+  form.hidden = true; result.hidden = false; $('#copy-status').textContent = ''; $('#result-title').focus();
   stagger([...result.children], 0, 45, 10);
 });
+function baseHref(link){
+  if(!link.dataset.base) link.dataset.base = link.getAttribute('href').split('?')[0];
+  return link.dataset.base;
+}
 for(const field of form.querySelectorAll('input,textarea')) field.addEventListener('input', () => field.setCustomValidity(''));
 $('#edit-message').addEventListener('click', () => { result.hidden = true; form.hidden = false; form.elements.idea.focus(); });
+const copyStatus = $('#copy-status');
+// navigator.clipboard is missing on file:// and other insecure origins, so guard the whole call.
+const copyMessage = async () => {
+  try{ await navigator.clipboard.writeText($('#prepared-message').value); return true; }
+  catch{ return false; }
+};
 $('#copy-message').addEventListener('click', async () => {
-  try{ await navigator.clipboard.writeText($('#prepared-message').value); $('#copy-status').textContent = 'Skopírované. Správu môžeš vložiť do Instagramu.'; }
-  catch{ const text = $('#prepared-message'); text.focus(); text.select(); $('#copy-status').textContent = 'Text je označený. Skopíruj ho cez Ctrl+C alebo ⌘C.'; }
+  if(await copyMessage()){ copyStatus.textContent = 'Skopírované. Teraz ju môžeš vložiť do správy.'; return; }
+  const text = $('#prepared-message'); text.focus(); text.select();
+  copyStatus.textContent = 'Text je označený. Skopíruj ho cez Ctrl+C alebo ⌘C.';
+});
+// Instagram and Facebook links can't carry text: copy it on the way out, the link opens as usual.
+for(const link of $$('[data-copy-note]')) link.addEventListener('click', async () => {
+  copyStatus.textContent = (await copyMessage())
+    ? `Správa je skopírovaná. ${link.dataset.copyNote}`
+    : `Skopíruj text správy vyššie. ${link.dataset.copyNote}`;
 });
 
 /* ---------- FAQ: answers open and close with their height ---------- */

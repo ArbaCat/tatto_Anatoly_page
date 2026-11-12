@@ -185,6 +185,9 @@ button svg{pointer-events:none}
 .contact>p:not(.eyebrow){margin:36px 0 4px;font-size:14px;line-height:1.7;color:var(--muted)}
 .mail-link{font-size:14px}
 .mail-link .tl::after{background:#c8a37366}
+.contact-channels{display:flex;justify-content:center;flex-wrap:wrap;gap:0 22px}
+.contact-channels .text-link{gap:8px}
+.contact-channels .arr{color:var(--gold)}
 footer{padding:30px var(--pad);display:flex;justify-content:space-between;gap:24px;align-items:center;font-size:12px;color:var(--muted)}
 footer a{min-height:44px;display:flex;align-items:center;transition:color .35s var(--ease-out)}
 footer .wordmark{font-size:11px;color:var(--paper)}
@@ -251,8 +254,8 @@ textarea{resize:vertical;min-height:110px}
 .submit-button{width:100%;background:var(--gold);color:var(--ink)}
 .submit-button::before{background:var(--paper)}
 @media(hover:hover){.submit-button:hover{border-color:var(--paper)}}
-.message-actions{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
-.message-actions .pill{gap:10px}
+.message-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:20px 0}
+.message-actions .pill{gap:10px;padding-inline:16px}
 #message-result h3{font-size:23px;letter-spacing:-.02em}
 #message-result>p{font-size:14px;line-height:1.7;color:var(--muted);margin-top:13px}
 #message-result>.text-link{margin-right:24px}
@@ -343,8 +346,6 @@ textarea{resize:vertical;min-height:110px}
   .booking-dialog{max-width:100%;width:100%;max-height:100dvh;height:100dvh;margin:0;border:0}
   .booking-content{padding:12px 24px 40px}
   .booking-content>h2{font-size:32px}
-  .message-actions{flex-direction:column}
-  .message-actions .pill{width:100%}
 }
 
 /* Phones held sideways and other very short screens: the whole hero fits in one screen,
