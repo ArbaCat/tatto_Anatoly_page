@@ -14,7 +14,7 @@
 2. Свой домен: у регистратора добавить для корня домена четыре A-записи `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`, для `www` — CNAME на `arbacat.github.io`. Затем Settings → Pages → Custom domain → ввести домен (GitHub сам добавит файл `CNAME`), дождаться проверки DNS и включить «Enforce HTTPS».
 3. После смены адреса заменить `https://arbacat.github.io/tatto_Anatoly_page/` в `index.html` (canonical, og:url, og:image, JSON-LD) на новый. Превью ссылки в Facebook/Messenger обновить через Sharing Debugger.
 
-Контакты стоят прямо в `index.html` (ссылки работают и без JS): WhatsApp `+421915317473`, Instagram `@anatoly.tattoo`, Facebook `anatoly.tattoo`. Студийной почты и названия студии на сайте нет — только адрес «Horná 8, Banská Bystrica» (блок контактов и JSON-LD). Превью для соцсетей — `assets/og.jpg` (1200 × 630), иконки — `assets/icon-32.png`, `assets/apple-touch-icon.png`.
+Контакты стоят прямо в `index.html` (ссылки работают и без JS): WhatsApp `+421915317473`, Instagram `@anatoly.tattoo`, Facebook `anatoly.tattoo`. Сайт — личный сайт мастера: ни почты, ни названия, ни адреса студии на нём нет, из местоположения только город (Banská Bystrica). Превью для соцсетей — `assets/og.jpg` (1200 × 630), иконки — `assets/icon-32.png`, `assets/apple-touch-icon.png`.
 
 ## Что работает
 
@@ -49,7 +49,7 @@
 
 ## Материалы
 
-Публичные фотографии из предоставленного HTML и [актуального профиля Анатолия](https://www.instagram.com/anatoly.tattoo/). Биографическая основа — [профиль студии](https://www.madramtattoo.sk/anatolij-tattoo-artist/).
+Публичные фотографии из предоставленного HTML и [актуального профиля Анатолия](https://www.instagram.com/anatoly.tattoo/).
 
 Портфолио использует оригинальные фотографии, без генеративной перерисовки татуировок. Первый экран — широкий кадр 2,65 : 1 из оригинала 3840 × 1448 (PNG): Анатолий справа под лампой, слева тёмное боке под текст. Три ширины для `srcset` — `assets/hero-1920.jpg`, `hero-2560.jpg`, `hero-3840.jpg` (JPEG q88–90, 4:4:4, progressive); телефоны получают не больше 2560. `hero-blur.jpg` (480 px) — только для размытого фона. На экранах уже кадра он обрезается слева, на более широких ширина ограничена высотой.
 

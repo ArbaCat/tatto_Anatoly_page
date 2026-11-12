@@ -189,7 +189,7 @@ button svg{pointer-events:none}
 .contact>p:not(.eyebrow){margin:36px 0 4px;font-size:14px;line-height:1.7;color:var(--muted)}
 .mail-link{font-size:14px}
 .mail-link .tl::after{background:#c8a37366}
-.contact-channels{display:flex;justify-content:center;flex-wrap:wrap;gap:0 22px}
+.contact-channels{display:flex;justify-content:center;flex-wrap:wrap;gap:0 22px;margin-top:28px}
 .contact-channels .text-link{gap:8px}
 .contact-channels .arr{color:var(--gold)}
 footer{padding:30px var(--pad);display:flex;justify-content:space-between;gap:24px;align-items:center;font-size:12px;color:var(--muted)}
