@@ -49,7 +49,7 @@ function setSource(image, work){
 // message carries a link to the work's photo (only on http(s): the standalone build has data: URIs there).
 const whatsappBase = $('#viewer-cta').getAttribute('href').split('?')[0];
 const photoLink = work => { const url = new URL(work.full, location.href); return /^https?:$/.test(url.protocol) ? `\n\n${url.href}` : ''; };
-const similarMessage = work => `${whatsappBase}?text=${encodeURIComponent(`Ahoj Anatoly, páči sa mi tvoja práca. Chcel/a by som sa s tebou poradiť ohľadom podobného tetovania.${photoLink(work)}`)}`;
+const similarMessage = work => `${whatsappBase}?text=${encodeURIComponent(`Ahoj, Anatoly! Páči sa mi táto práca. Môžeme sa porozprávať o podobnom tetovaní?${photoLink(work)}`)}`;
 
 /* Switching. Every variant (photo, caption, counter) exists up front in the same place;
    switching moves .is-active and CSS transitions do the rest. Fast clicks turn a running

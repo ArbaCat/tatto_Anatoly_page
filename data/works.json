@@ -3,7 +3,7 @@
     "photo": "assets/works/colour.jpg",
     "title": "Farba. Svetlo. Detail.",
     "category": "Farba · predlaktie",
-    "description": "Živopisný portrét, sýta modrá a teplé zlaté tóny.",
+    "description": "Portrét v sýtej modrej a teplých zlatých tónoch.",
     "alt": "Farebný portrét s modrým závojom a zlatou svätožiarou na predlaktí",
     "crop": "50% 38%"
   },
@@ -35,8 +35,8 @@
     "photo": "assets/works/neo.jpg",
     "title": "Ilustrácia na koži.",
     "category": "Farebný portrét · rameno",
-    "description": "Ilustratívny portrét s teplou paletou a výraznými obrysmi.",
-    "alt": "Farebný ilustrovaný portrét ženy na ramene",
+    "description": "Portrét v štýle ilustrácie. Teplé farby a výrazné obrysy.",
+    "alt": "Farebné tetovanie na ramene: portrét ženy v štýle ilustrácie.",
     "crop": "50% 45%"
   }
 ]
