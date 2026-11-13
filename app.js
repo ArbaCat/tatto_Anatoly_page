@@ -493,4 +493,7 @@ if('IntersectionObserver' in window){
   new IntersectionObserver(entries => { heroVisible = entries.at(-1).isIntersecting; updateBar(); }, {threshold:0}).observe(hero);
   new IntersectionObserver(entries => { contactVisible = entries.at(-1).isIntersecting; updateBar(); }, {threshold:0.1}).observe($('.contact'));
 }
+/* Instagram on phones: ig.me/m/… opens Direct on a computer, but a phone lands on the web login page
+   instead of the app. The profile link is opened by the Instagram app itself; "Message" is one tap away. */
+if(matchMedia('(hover: none) and (pointer: coarse)').matches) for(const link of $$('a[href^="https://ig.me/m/"]')) link.href = `https://www.instagram.com/${link.getAttribute('href').split('/m/')[1]}/`;
 })();
