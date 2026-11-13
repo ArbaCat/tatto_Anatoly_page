@@ -31,7 +31,7 @@ const thumbs = $$('#work-list .thumb');
 const works = thumbs.map(link => {
   const full = link.getAttribute('href'), w = Number(link.dataset.w) || 0;
   return {
-    full, w, mid:full.replace(/\.jpg$/, '-960.jpg'), midW:Math.min(960, w),
+    full, w, mid:full.replace(/([^/]+)\.jpg$/, 'sizes/$1-960.jpg'), midW:Math.min(960, w),
     title:link.dataset.title, category:link.dataset.category,
     description:link.dataset.description || '', alt:$('img', link).alt
   };

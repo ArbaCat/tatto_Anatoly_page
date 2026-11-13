@@ -1,0 +1,48 @@
+# Rebuilds the portfolio after every change to the works list or the photos (a save in Pages CMS,
+# see .pages.yml) and commits the result, which GitHub Pages then publishes.
+name: Portfolio
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - data/works.json
+      - assets/works/**
+      - scripts/build_works.py
+      - .github/workflows/works.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: portfolio
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install pillow==11.3.0 pillow-heif==1.8.1
+      - name: Build and commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Another save can land while this runs; then start again from the newest main.
+          for attempt in 1 2 3; do
+            git fetch --quiet origin main
+            git reset --quiet --hard origin/main
+            git clean -fdq
+            python scripts/build_works.py
+            git add --all index.html data/works.json assets/works
+            if git diff --cached --quiet; then echo 'The portfolio is up to date.'; exit 0; fi
+            git commit --quiet -m 'Portfolio: rebuild from data/works.json'
+            if git push --quiet origin HEAD:main; then exit 0; fi
+          done
+          exit 1
