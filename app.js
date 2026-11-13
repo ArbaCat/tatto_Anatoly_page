@@ -37,18 +37,19 @@ const works = thumbs.map(link => {
   };
 });
 if(!works.length) return;
-const pad = n => String(n).padStart(2, '0');
+const pad = n => String(n).padStart(2, '0'), wrap = index => (index + works.length) % works.length;
 const counter = index => `${pad(index + 1)} / ${pad(works.length)}`;
-const wrap = index => (index + works.length) % works.length;
 // Responsive source for a work: the 960 px copy for phones, the original for larger screens.
 function setSource(image, work){
   if(work.midW < work.w){ image.srcset = `${work.mid} ${work.midW}w, ${work.full} ${work.w}w`; image.src = work.mid; }
   else{ image.removeAttribute('srcset'); image.src = work.full; }
   image.alt = work.alt;
 }
-// WhatsApp: the number lives in the HTML links; only the prefilled text changes.
+// WhatsApp: the number lives in the HTML links; only the text changes. wa.me cannot attach files, so the
+// message carries a link to the work's photo (only on http(s): the standalone build has data: URIs there).
 const whatsappBase = $('#viewer-cta').getAttribute('href').split('?')[0];
-const similarMessage = work => `${whatsappBase}?text=${encodeURIComponent(`Ahoj Anatoly, páči sa mi tvoja práca „${work.title}“. Chcel/a by som sa poradiť o podobnom tetovaní.`)}`;
+const photoLink = work => { const url = new URL(work.full, location.href); return /^https?:$/.test(url.protocol) ? `\n\n${url.href}` : ''; };
+const similarMessage = work => `${whatsappBase}?text=${encodeURIComponent(`Ahoj Anatoly, páči sa mi tvoja práca. Chcel/a by som sa s tebou poradiť ohľadom podobného tetovania.${photoLink(work)}`)}`;
 
 /* Switching. Every variant (photo, caption, counter) exists up front in the same place;
    switching moves .is-active and CSS transitions do the rest. Fast clicks turn a running
