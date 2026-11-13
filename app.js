@@ -1,16 +1,9 @@
 'use strict';
-const works = [
-  { src:'assets/colour.jpg', title:'Farba. Svetlo. Detail.', category:'Farba · predlaktie', alt:'Farebný portrét s modrým závojom a zlatou svätožiarou na predlaktí', description:'Živopisný portrét, sýta modrá a teplé zlaté tóny. Pozri si celú kompozíciu v pôvodnej fotografii.' },
-  { src:'assets/black-grey.jpg', title:'Čierna a sivá.', category:'Čierno-sivá kompozícia', alt:'Čierno-sivá bojovníčka so zvieracou hlavou; tri pohľady na tetovanie', description:'Výraz, svetlo a hĺbka bez farby. Fotografia zachytáva prácu z viacerých uhlov.' },
-  { src:'assets/ornament.jpg', title:'Ornament, ktorý patrí k telu.', category:'Folklórny ornament · chrbát', alt:'Farebný symetrický kvetinový ornament na hornej časti chrbta', description:'Kvetinový motív rozprestretý cez ramená. Symetria, výrazná kontúra a farba.' },
-  { src:'assets/japanese.jpg', title:'Líška a pivónie.', category:'Farebná kompozícia · rukáv', alt:'Farebný rukáv s líškou a pivóniami, celkový pohľad a detail', description:'Rozsiahlejšia farebná kompozícia. Celkový pohľad a detail z pôvodnej fotografie.' },
-  { src:'assets/neo.jpg', title:'Ilustrácia na koži.', category:'Farebný portrét · rameno', alt:'Farebný ilustrovaný portrét ženy na ramene', description:'Ilustratívny portrét s teplou paletou a výraznými obrysmi.' }
-];
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
+(() => {
+const $ = (selector, scope = document) => scope.querySelector(selector);
+const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 const root = document.documentElement;
 root.classList.add('js');
-
 /* ---------- Motion helpers ---------- */
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const EASE_OUT = 'cubic-bezier(.22,1,.36,1)';
@@ -23,46 +16,62 @@ function track(animation){
   animation.finished.then(done, done);
   return animation;
 }
-function animateIn(element, {distance=14, duration=650, delay=0}={}){
+function stagger(elements, start = 0, step = 50, distance = 16){
   if(calm()) return;
-  track(element.animate([
-    {opacity:0, transform:`translateY(${distance}px)`},
-    {opacity:1, transform:'none'}
-  ], {duration, delay, easing:EASE_OUT, fill:'backwards'}));
-}
-function stagger(elements, start=0, step=50, distance=16){
-  elements.forEach((element, index) => animateIn(element, {distance, duration:640, delay:start + index*step}));
+  elements.forEach((element, index) => track(element.animate(
+    [{opacity:0, transform:`translateY(${distance}px)`}, {opacity:1, transform:'none'}],
+    {duration:640, delay:start + index*step, easing:EASE_OUT, fill:'backwards'})));
 }
 reducedMotion.addEventListener('change', () => {
   if(reducedMotion.matches) for(const animation of [...runningMotion]) animation.finish();
 });
-
+const plainKey = event => !(event.altKey || event.metaKey || event.ctrlKey || event.shiftKey);
+/* ---------- Works: the thumbnail list in index.html is the single source ---------- */
+const thumbs = $$('#work-list .thumb');
+const works = thumbs.map(link => {
+  const full = link.getAttribute('href'), w = Number(link.dataset.w) || 0;
+  return {
+    full, w, mid:full.replace(/\.jpg$/, '-960.jpg'), midW:Math.min(960, w),
+    title:link.dataset.title, category:link.dataset.category,
+    description:link.dataset.description || '', alt:$('img', link).alt
+  };
+});
+if(!works.length) return;
 const pad = n => String(n).padStart(2, '0');
 const counter = index => `${pad(index + 1)} / ${pad(works.length)}`;
 const wrap = index => (index + works.length) % works.length;
+// Responsive source for a work: the 960 px copy for phones, the original for larger screens.
+function setSource(image, work){
+  if(work.midW < work.w){ image.srcset = `${work.mid} ${work.midW}w, ${work.full} ${work.w}w`; image.src = work.mid; }
+  else{ image.removeAttribute('srcset'); image.src = work.full; }
+  image.alt = work.alt;
+}
+// WhatsApp: the number lives in the HTML links; only the prefilled text changes.
+const whatsappBase = $('#viewer-cta').getAttribute('href').split('?')[0];
+const similarMessage = work => `${whatsappBase}?text=${encodeURIComponent(`Ahoj Anatoly, páči sa mi tvoja práca „${work.title}“. Chcel/a by som sa poradiť o podobnom tetovaní.`)}`;
 
-/* Switching works. Every variant (photo, caption, counter) exists up front and sits in the
-   same place; switching only moves the .is-active class and CSS transitions do the rest.
-   Photos are decoded in advance, so nothing has to load mid-transition, and transitions
-   interrupted by fast clicking continue from wherever they are instead of snapping. */
+/* Switching. Every variant (photo, caption, counter) exists up front in the same place;
+   switching moves .is-active and CSS transitions do the rest. Fast clicks turn a running
+   transition around instead of snapping. */
 function buildLayers(first){
   const layers = [first];
-  for(const work of works.slice(1)){
-    const image = first.cloneNode(false);
-    image.classList.remove('is-active');
-    image.fetchPriority = 'low'; // hidden until switched to; never compete with the first screen
-    image.src = work.src; image.alt = work.alt;
-    layers[layers.length - 1].after(image);
-    layers.push(image);
-  }
+  works.forEach((work, index) => {
+    if(index){
+      const image = first.cloneNode(false);
+      image.classList.remove('is-active');
+      image.fetchPriority = 'low'; // hidden until switched to; never competes with the first screen
+      layers.at(-1).after(image);
+      layers.push(image);
+    }
+    setSource(layers[index], work);
+  });
   for(const image of layers) if(image.decode) image.decode().catch(() => {});
   return layers;
 }
 function buildStack(container, fill){
-  const first = container.firstElementChild;
-  const items = [first];
+  const first = container.firstElementChild, items = [first];
   works.forEach((work, index) => {
-    if(index === 0) return;
+    if(!index) return;
     const item = first.cloneNode(true);
     item.classList.remove('is-active');
     fill(item, work, index);
@@ -71,9 +80,8 @@ function buildStack(container, fill){
   });
   return items;
 }
-function activate(items, index, direction=0, {enter=10, container=null}={}){
+function activate(items, index, direction = 0, {enter = 10, container = null} = {}){
   const next = items[index];
-  // Hand control back to CSS if an entrance animation (e.g. opening the gallery) is still running.
   for(const item of items) for(const animation of item.getAnimations()) if(!animation.transitionProperty) animation.cancel();
   if(container) container.style.setProperty('--out', `${-direction*8}px`);
   if(!direction || calm()){
@@ -83,8 +91,6 @@ function activate(items, index, direction=0, {enter=10, container=null}={}){
     return;
   }
   if(next.classList.contains('is-active')) return;
-  // Start the incoming item slightly off to the side it comes from — unless it is still
-  // partly visible from a previous switch, in which case it simply turns around.
   if(parseFloat(getComputedStyle(next).opacity) < .05){
     next.style.transition = 'none'; next.style.translate = `${direction*enter}px 0`;
     void next.offsetWidth;
@@ -92,27 +98,20 @@ function activate(items, index, direction=0, {enter=10, container=null}={}){
   }
   for(const item of items) item.classList.toggle('is-active', item === next);
 }
-const fillCounter = (item, work, index) => { item.textContent = counter(index); };
 function onSwipe(element, handler){
   let start = null;
-  element.addEventListener('touchstart', event => {
-    const touch = event.changedTouches[0]; start = {x:touch.clientX, y:touch.clientY};
-  }, {passive:true});
+  element.addEventListener('touchstart', event => { const t = event.changedTouches[0]; start = [t.clientX, t.clientY]; }, {passive:true});
   element.addEventListener('touchend', event => {
-    if(!start) return;
-    const touch = event.changedTouches[0];
-    const dx = touch.clientX - start.x, dy = touch.clientY - start.y;
+    const t = event.changedTouches[0], dx = start ? t.clientX - start[0] : 0, dy = start ? t.clientY - start[1] : 0;
     start = null;
-    if(Math.abs(dx) > 65 && Math.abs(dx) > Math.abs(dy)*1.5) handler(dx < 0 ? 1 : -1);
+    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.5) handler(dx < 0 ? 1 : -1);
   }, {passive:true});
 }
-
 /* ---------- Dialogs ---------- */
-const menu = $('#menu-dialog'), gallery = $('#gallery-dialog'), booking = $('#booking-dialog');
+const menu = $('#menu-dialog'), viewer = $('#viewer');
 const header = $('.header'), hero = $('.hero');
-let featuredIndex = 0, galleryIndex = 0;
 let heroVisible = true, contactVisible = false;
-const mobileBar = $('.mobile-book');
+const mobileBar = $('.mobile-cta');
 mobileBar.hidden = false;
 function updateBar(){
   const show = !(heroVisible || contactVisible || document.querySelector('dialog[open]'));
@@ -125,15 +124,8 @@ function openDialog(dialog){
     for(const animation of dialog.getAnimations()) animation.cancel();
     dialog._closing = null; dialog.classList.remove('is-closing');
   }
-  const others = $$('dialog[open]').filter(current => current !== dialog);
-  for(const current of others){
-    for(const animation of current.getAnimations()) animation.cancel();
-    current._closing = null;
-    current.close();
-    current.classList.remove('is-closing', 'is-swap');
-  }
-  // Switching from one dialog to another keeps the backdrop steady.
-  dialog.classList.toggle('is-swap', others.length > 0);
+  if(!dialog.open) dialog._opener = document.activeElement;
+  for(const current of $$('dialog[open]')) if(current !== dialog){ current._closing = null; current.close(); }
   dialog._openedAt = performance.now();
   if(!dialog.open) dialog.showModal();
   document.body.classList.add('modal-open'); updateBar();
@@ -141,34 +133,30 @@ function openDialog(dialog){
 function closeDialog(dialog){
   if(!dialog.open) return Promise.resolve();
   if(dialog._closing) return dialog._closing;
-  if(calm()){ dialog.close(); afterClose(dialog); return Promise.resolve(); }
-  for(const animation of dialog.getAnimations()) animation.finish();
+  if(calm()){ dialog.close(); return Promise.resolve(); }
   dialog.classList.add('is-closing');
-  const exit = track(dialog.animate([
-    {opacity:1, transform:'none'},
-    {opacity:0, transform:dialog === menu ? 'none' : 'translateY(10px) scale(.99)'}
-  ], {duration:230, easing:EASE_EXIT, fill:'forwards'}));
+  const exit = track(dialog.animate([{opacity:1}, {opacity:0}], {duration:200, easing:EASE_EXIT, fill:'forwards'}));
   const closing = dialog._closing = exit.finished.catch(() => {}).then(() => {
     if(dialog._closing !== closing) return;
     dialog._closing = null;
     if(dialog.open) dialog.close();
     exit.cancel();
-    afterClose(dialog);
   });
   return closing;
 }
 function afterClose(dialog){
-  dialog.classList.remove('is-closing', 'is-swap');
+  dialog.classList.remove('is-closing');
   if(!document.querySelector('dialog[open]')) document.body.classList.remove('modal-open');
   updateBar();
+  // Focus goes back to whatever opened the dialog (the photo, a thumbnail, the menu button).
+  const opener = dialog._opener; dialog._opener = null;
+  if(opener && opener.isConnected && opener !== document.body) opener.focus({preventScroll:true});
 }
 for(const dialog of $$('dialog')){
   dialog.querySelector('.close').addEventListener('click', () => closeDialog(dialog));
   dialog.addEventListener('cancel', event => { event.preventDefault(); closeDialog(dialog); });
   dialog.addEventListener('close', () => afterClose(dialog));
-  // Close on the backdrop only when the press both started and ended there: dragging a text
-  // selection out of a field must not close the form, and the second click of a double click
-  // that opened the dialog must not close it again.
+  // Backdrop closes only when the press started and ended there, and not right after opening.
   const onBackdrop = event => {
     if(event.target !== dialog) return false;
     const r = dialog.getBoundingClientRect();
@@ -178,156 +166,202 @@ for(const dialog of $$('dialog')){
   dialog.addEventListener('pointerdown', event => { pressedBackdrop = onBackdrop(event); });
   dialog.addEventListener('click', event => {
     const pressed = pressedBackdrop; pressedBackdrop = false;
-    if(!pressed || !onBackdrop(event) || performance.now() - (dialog._openedAt || 0) < 350) return;
-    closeDialog(dialog);
+    if(pressed && onBackdrop(event) && performance.now() - (dialog._openedAt || 0) > 350) closeDialog(dialog);
   });
 }
-const plainKey = event => !(event.altKey || event.metaKey || event.ctrlKey || event.shiftKey);
 $('.menu-button').addEventListener('click', () => {
   openDialog(menu);
-  stagger($$('.menu-dialog nav a, .menu-dialog > .pill'), 90, 55, 18);
+  stagger($$('.menu-dialog nav a, .menu-dialog .cta, .menu-dialog .cta-note'), 80, 50, 16);
 });
-
-/* ---------- Selected works ---------- */
-const featuredLayers = buildLayers($('#open-featured > img'));
+/* ---------- Featured work + thumbnails ---------- */
+const stageButton = $('#open-featured');
+const featuredLayers = buildLayers($('img', stageButton));
 const workCaption = $('#work-caption'), workCounter = $('#work-counter');
 const captionItems = buildStack(workCaption, (item, work) => {
-  item.querySelector('p').textContent = work.category.toUpperCase();
-  item.querySelector('h3').textContent = work.title;
+  $('.caption', item).textContent = work.category;
+  $('h3', item).textContent = work.title;
+  $('.work-desc', item).textContent = work.description;
 });
-const counterItems = buildStack(workCounter, fillCounter);
-function showFeatured(index, direction=0){
+const counterItems = buildStack(workCounter, (item, work, index) => { item.textContent = counter(index); });
+let featuredIndex = 0;
+function showFeatured(index, direction = 0){
   featuredIndex = wrap(index); const work = works[featuredIndex];
   activate(featuredLayers, featuredIndex, direction, {enter:14});
   activate(captionItems, featuredIndex, direction, {container:workCaption});
   activate(counterItems, featuredIndex, direction, {enter:6, container:workCounter});
-  $('#open-featured').setAttribute('aria-label', `Zväčšiť prácu: ${work.title}`);
+  for(const [i, thumb] of thumbs.entries()){ if(i === featuredIndex) thumb.setAttribute('aria-current', 'true'); else thumb.removeAttribute('aria-current'); }
+  stageButton.setAttribute('aria-label', `Zobraziť detail: ${work.title}`);
   if(direction) $('#work-status').textContent = `${counter(featuredIndex)} — ${work.title}`;
 }
 $('#previous-work').addEventListener('click', () => showFeatured(featuredIndex - 1, -1));
 $('#next-work').addEventListener('click', () => showFeatured(featuredIndex + 1, 1));
 $('#prace').addEventListener('keydown', event => {
-  if(!plainKey(event)) return; // Alt/Cmd+arrow is browser navigation, not "next work"
+  if(!plainKey(event) || event.target.closest('#work-list')) return;
   if(event.key === 'ArrowRight'){ event.preventDefault(); showFeatured(featuredIndex + 1, 1); }
   if(event.key === 'ArrowLeft'){ event.preventDefault(); showFeatured(featuredIndex - 1, -1); }
 });
-onSwipe($('#prace'), direction => showFeatured(featuredIndex + direction, direction));
-
-/* Clip each photo layer to the area the picture actually covers (object-fit: contain
-   leaves empty bands). The clip is invisible, but it means only the photograph reacts to
-   the pointer — not the black space around it, and never the controls next to it. */
-function fitHitArea(image){
-  const w = image.naturalWidth, h = image.naturalHeight;
-  if(!w || !h || !image.clientWidth) return;
-  const s = getComputedStyle(image);
-  const pt = parseFloat(s.paddingTop), pr = parseFloat(s.paddingRight), pb = parseFloat(s.paddingBottom), pl = parseFloat(s.paddingLeft);
-  const boxW = image.clientWidth - pl - pr, boxH = image.clientHeight - pt - pb;
-  const scale = Math.min(boxW/w, boxH/h), drawnW = w*scale, drawnH = h*scale;
-  const left = Math.floor(pl + (boxW - drawnW)/2), top = Math.floor(pt + (boxH - drawnH)/2);
-  const right = Math.floor(image.clientWidth - left - drawnW), bottom = Math.floor(image.clientHeight - top - drawnH);
-  image.style.clipPath = `inset(${Math.max(0, top)}px ${Math.max(0, right)}px ${Math.max(0, bottom)}px ${Math.max(0, left)}px)`;
-}
-const fitAllHitAreas = () => featuredLayers.forEach(fitHitArea);
-for(const image of featuredLayers) if(!image.complete) image.addEventListener('load', () => fitHitArea(image));
-fitAllHitAreas();
-if('ResizeObserver' in window) new ResizeObserver(fitAllHitAreas).observe($('#open-featured'));
-else window.addEventListener('resize', fitAllHitAreas);
-
-/* ---------- Gallery ---------- */
-const galleryLayers = buildLayers($('.gallery-photo-wrap > img'));
-const galleryText = $('#gallery-text'), galleryCount = $('#gallery-count');
-const galleryTextItems = buildStack(galleryText, (item, work) => {
-  item.querySelector('.eyebrow').textContent = work.category.toUpperCase();
-  item.querySelector('h2').textContent = work.title;
-  item.querySelector('.gallery-description').textContent = work.description;
-});
-const galleryCountItems = buildStack(galleryCount, fillCounter);
-function showGallery(index, direction=0){
-  galleryIndex = wrap(index); const work = works[galleryIndex];
-  activate(galleryLayers, galleryIndex, direction, {enter:14});
-  activate(galleryTextItems, galleryIndex, direction, {container:galleryText});
-  activate(galleryCountItems, galleryIndex, direction, {enter:6, container:galleryCount});
-  gallery.setAttribute('aria-label', work.title);
-  // The page's live region is inert behind the modal, so the dialog has its own.
-  if(direction) $('#gallery-status').textContent = `${counter(galleryIndex)} — ${work.title}`;
-}
-function openGallery(index){
-  showGallery(index);
-  openDialog(gallery);
-  if(!calm()) track(galleryLayers[galleryIndex].animate([
-    {opacity:0, transform:'scale(1.035)'},
-    {opacity:1, transform:'none'}
-  ], {duration:800, delay:60, easing:EASE_OUT, fill:'backwards'}));
-  stagger($$('.gallery-copy > *'), 120, 45, 12);
-}
-$('#open-featured').addEventListener('click', () => openGallery(featuredIndex));
-$('#work-detail').addEventListener('click', () => openGallery(featuredIndex));
-for(const button of $$('[data-work]')) button.addEventListener('click', () => openGallery(Number(button.dataset.work)));
-$('#gallery-prev').addEventListener('click', () => showGallery(galleryIndex - 1, -1));
-$('#gallery-next').addEventListener('click', () => showGallery(galleryIndex + 1, 1));
-gallery.addEventListener('keydown', event => {
-  if(!plainKey(event)) return;
-  if(event.key === 'ArrowRight'){ event.preventDefault(); showGallery(galleryIndex + 1, 1); }
-  if(event.key === 'ArrowLeft'){ event.preventDefault(); showGallery(galleryIndex - 1, -1); }
-});
-onSwipe($('.gallery-photo-wrap'), direction => showGallery(galleryIndex + direction, direction));
-
-/* ---------- Booking ---------- */
-const form = $('#booking-form'), result = $('#message-result');
-function openBooking(work){
-  form.hidden = false; result.hidden = true; $('#copy-status').textContent = '';
-  if(work){
-    const idea = form.elements.idea;
-    const reference = `Páči sa mi práca „${work.title}“ a chcem prebrať vlastný motív.`;
-    if(!idea.value.trim()) idea.value = reference;
-    else if(!idea.value.includes(work.title)) idea.value += '\n\n' + reference;
-  }
-  openDialog(booking);
-  stagger($$('.booking-content > :not([hidden])'), 80, 50, 10);
-}
-for(const button of $$('[data-book]')) button.addEventListener('click', () => openBooking());
-$('#gallery-consult').addEventListener('click', () => openBooking(works[galleryIndex]));
-form.addEventListener('submit', event => {
+onSwipe(stageButton, direction => showFeatured(featuredIndex + direction, direction));
+// A thumbnail shows that work in the large view (without JS the link opens the photo itself).
+thumbs.forEach((thumb, index) => thumb.addEventListener('click', event => {
+  if(event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
-  for(const field of [form.elements.name, form.elements.contact, form.elements.idea]){
-    field.setCustomValidity(field.value.trim() ? '' : 'Vyplň, prosím, toto pole.');
+  if(index !== featuredIndex) showFeatured(index, index > featuredIndex ? 1 : -1);
+  const r = stageButton.getBoundingClientRect();
+  if(r.top < 0 || r.bottom > window.innerHeight) stageButton.scrollIntoView({block:'nearest', behavior:calm() ? 'auto' : 'smooth'});
+}));
+// The opener is passed explicitly: Safari does not focus a button on click, so
+// document.activeElement alone would not know where to return focus.
+stageButton.addEventListener('click', () => openViewer(featuredIndex, stageButton));
+$('#work-detail').addEventListener('click', event => openViewer(featuredIndex, event.currentTarget));
+/* ---------- Detail view with zoom ---------- */
+const stage = $('#viewer-stage'), viewImage = $('#viewer-img'), zoomButton = $('#viewer-zoom'), info = $('#viewer-info');
+let viewerIndex = 0;
+const zoom = (() => {
+  let s = 1, tx = 0, ty = 0;
+  // The photo's drawn rectangle inside the stage (object-fit: contain).
+  function drawn(){
+    const W = stage.clientWidth, H = stage.clientHeight;
+    const nw = viewImage.naturalWidth || W, nh = viewImage.naturalHeight || H;
+    const k = Math.min(W/nw, H/nh), dw = nw*k, dh = nh*k;
+    return {W, H, dw, dh, ox:(W - dw)/2, oy:(H - dh)/2};
   }
-  if(!form.reportValidity()) return;
-  const data = new FormData(form);
-  const message = `Ahoj Anatoly,\n\nvolám sa ${data.get('name').trim()}. Chcem sa poradiť o tetovaní.\n\n${data.get('idea').trim()}\n\nMôj kontakt: ${data.get('contact').trim()}\n\nĎakujem!`;
-  $('#prepared-message').value = message;
-  // The addresses live in the HTML (they also work without JS); here we only add the text.
-  $('#whatsapp-message').href = `${baseHref($('#whatsapp-message'))}?text=${encodeURIComponent(message)}`;
-  form.hidden = true; result.hidden = false; $('#copy-status').textContent = ''; $('#result-title').focus();
-  stagger([...result.children], 0, 45, 10);
-});
-function baseHref(link){
-  if(!link.dataset.base) link.dataset.base = link.getAttribute('href').split('?')[0];
-  return link.dataset.base;
-}
-for(const field of form.querySelectorAll('input,textarea')) field.addEventListener('input', () => field.setCustomValidity(''));
-$('#edit-message').addEventListener('click', () => { result.hidden = true; form.hidden = false; form.elements.idea.focus(); });
-const copyStatus = $('#copy-status');
-// navigator.clipboard is missing on file:// and other insecure origins, so guard the whole call.
-const copyMessage = async () => {
-  try{ await navigator.clipboard.writeText($('#prepared-message').value); return true; }
-  catch{ return false; }
-};
-$('#copy-message').addEventListener('click', async () => {
-  if(await copyMessage()){ copyStatus.textContent = 'Skopírované. Teraz ju môžeš vložiť do správy.'; return; }
-  const text = $('#prepared-message'); text.focus(); text.select();
-  copyStatus.textContent = 'Text je označený. Skopíruj ho cez Ctrl+C alebo ⌘C.';
-});
-// Instagram and Facebook links can't carry text: copy it on the way out, the link opens as usual.
-for(const link of $$('[data-copy-note]')) link.addEventListener('click', async () => {
-  copyStatus.textContent = (await copyMessage())
-    ? `Správa je skopírovaná. ${link.dataset.copyNote}`
-    : `Skopíruj text správy vyššie. ${link.dataset.copyNote}`;
-});
+  // Keep the enlarged photo covering the stage; a side smaller than the stage stays centred.
+  function clamp(){
+    const d = drawn();
+    if(s*d.dw <= d.W) tx = (d.W - s*d.dw)/2 - s*d.ox; else tx = Math.min(-s*d.ox, Math.max(d.W - s*(d.ox + d.dw), tx));
+    if(s*d.dh <= d.H) ty = (d.H - s*d.dh)/2 - s*d.oy; else ty = Math.min(-s*d.oy, Math.max(d.H - s*(d.oy + d.dh), ty));
+  }
+  function apply(){
+    const zoomed = s > 1.001;
+    viewImage.style.transform = zoomed ? `translate(${tx}px, ${ty}px) scale(${s})` : '';
+    stage.classList.toggle('is-zoomed', zoomed);
+    zoomButton.setAttribute('aria-pressed', String(zoomed));
+    zoomButton.setAttribute('aria-label', zoomed ? 'Oddialiť' : 'Priblížiť');
+  }
+  // Up to 1.5× the photo's own resolution, never less than 2.5× and never more than 5×.
+  const maxScale = () => Math.min(5, Math.max(2.5, (viewImage.naturalWidth || 1) / (drawn().dw || 1) * 1.5));
+  function to(scale, cx, cy){
+    const next = Math.min(maxScale(), Math.max(1, scale));
+    const px = (cx - tx)/s, py = (cy - ty)/s; // the photo point under (cx, cy) stays put
+    s = next; tx = cx - s*px; ty = cy - s*py;
+    if(s <= 1.001){ s = 1; tx = 0; ty = 0; } else clamp();
+    apply();
+  }
+  const centre = () => [stage.clientWidth/2, stage.clientHeight/2];
+  return {get scale(){ return s; }, to, centre,
+    panBy(dx, dy){ if(s <= 1) return; tx += dx; ty += dy; clamp(); apply(); },
+    toggle(cx, cy){ if(cx === undefined) [cx, cy] = centre(); to(s > 1.001 ? 1 : 2.5, cx, cy); },
+    reset(){ s = 1; tx = 0; ty = 0; apply(); },
+    refit(){ if(s > 1){ clamp(); apply(); } }};
+})();
 
+function showViewer(index, direction = 0){
+  viewerIndex = wrap(index); const work = works[viewerIndex];
+  stage.classList.add('is-gesturing'); zoom.reset();
+  viewImage.src = work.full; viewImage.alt = work.alt; // the original, so zoom shows real detail
+  requestAnimationFrame(() => stage.classList.remove('is-gesturing'));
+  if(direction && !calm()) track(viewImage.animate([{opacity:0, translate:`${direction*24}px 0`}, {opacity:1, translate:'0 0'}], {duration:380, easing:EASE_OUT}));
+  $('#viewer-count').textContent = counter(viewerIndex);
+  $('#viewer-category').textContent = work.category;
+  $('#viewer-title').textContent = work.title;
+  $('#viewer-description').textContent = work.description;
+  $('#viewer-cta').href = similarMessage(work);
+  info.classList.remove('is-expanded'); $('#viewer-toggle').setAttribute('aria-expanded', 'false');
+  if(direction) $('#viewer-status').textContent = `${counter(viewerIndex)} — ${work.title}`;
+}
+function openViewer(index, opener){
+  showViewer(index);
+  openDialog(viewer);
+  if(opener) viewer._opener = opener;
+  zoomButton.focus({preventScroll:true});
+}
+viewer.addEventListener('close', () => { if(viewerIndex !== featuredIndex) showFeatured(viewerIndex); zoom.reset(); });
+viewImage.addEventListener('load', () => zoom.reset());
+window.addEventListener('resize', () => zoom.refit());
+$('#viewer-prev').addEventListener('click', () => showViewer(viewerIndex - 1, -1));
+$('#viewer-next').addEventListener('click', () => showViewer(viewerIndex + 1, 1));
+zoomButton.addEventListener('click', () => zoom.toggle());
+$('#viewer-toggle').addEventListener('click', event => {
+  const open = info.classList.toggle('is-expanded');
+  event.currentTarget.setAttribute('aria-expanded', String(open));
+});
+viewer.addEventListener('keydown', event => {
+  if(event.altKey || event.metaKey || event.ctrlKey) return;
+  const zoomed = zoom.scale > 1, [cx, cy] = zoom.centre(), step = 80;
+  switch(event.key){
+    case '+': case '=': zoom.to(zoom.scale*1.5, cx, cy); break;
+    case '-': case '_': zoom.to(zoom.scale/1.5, cx, cy); break;
+    case '0': zoom.reset(); break;
+    case 'ArrowLeft': if(zoomed) zoom.panBy(step, 0); else showViewer(viewerIndex - 1, -1); break;
+    case 'ArrowRight': if(zoomed) zoom.panBy(-step, 0); else showViewer(viewerIndex + 1, 1); break;
+    case 'ArrowUp': if(!zoomed) return; zoom.panBy(0, step); break;
+    case 'ArrowDown': if(!zoomed) return; zoom.panBy(0, -step); break;
+    default: return;
+  }
+  event.preventDefault();
+});
+// Pointer gestures: mouse click toggles zoom; touch double-tap toggles it; pinch zooms;
+// drag moves the enlarged photo; a horizontal swipe on the unzoomed photo switches works.
+const pointers = new Map();
+let gesture = null, lastTap = null;
+const local = (x, y) => { const r = stage.getBoundingClientRect(); return [x - r.left, y - r.top]; };
+stage.addEventListener('pointerdown', event => {
+  if(event.target.closest('button')) return;
+  try{ stage.setPointerCapture(event.pointerId); }catch{} // capture is a nicety, never a blocker
+  pointers.set(event.pointerId, [event.clientX, event.clientY]);
+  stage.classList.add('is-gesturing');
+  if(pointers.size === 1){
+    gesture = {type:'pan', start:[event.clientX, event.clientY], last:[event.clientX, event.clientY], moved:0, kind:event.pointerType};
+  }else if(pointers.size === 2){
+    const [a, b] = [...pointers.values()];
+    gesture = {type:'pinch', dist:Math.hypot(a[0] - b[0], a[1] - b[1]), scale:zoom.scale, mid:local((a[0] + b[0])/2, (a[1] + b[1])/2)};
+  }
+});
+stage.addEventListener('pointermove', event => {
+  if(!gesture || !pointers.has(event.pointerId)) return;
+  pointers.set(event.pointerId, [event.clientX, event.clientY]);
+  if(gesture.type === 'pinch' && pointers.size > 1){
+    const [a, b] = [...pointers.values()], mid = local((a[0] + b[0])/2, (a[1] + b[1])/2);
+    zoom.to(gesture.scale * Math.hypot(a[0] - b[0], a[1] - b[1]) / gesture.dist, mid[0], mid[1]);
+    zoom.panBy(mid[0] - gesture.mid[0], mid[1] - gesture.mid[1]);
+    gesture.mid = mid;
+  }else if(gesture.type === 'pan'){
+    const dx = event.clientX - gesture.last[0], dy = event.clientY - gesture.last[1];
+    gesture.last = [event.clientX, event.clientY]; gesture.moved += Math.abs(dx) + Math.abs(dy);
+    if(zoom.scale > 1){ zoom.panBy(dx, dy); if(gesture.moved > 4) stage.classList.add('is-dragging'); }
+  }
+});
+function endPointer(event){
+  if(!pointers.delete(event.pointerId) || !gesture) return;
+  if(gesture.type === 'pinch'){
+    // One finger left: carry on as a drag, but it can no longer count as a tap.
+    if(pointers.size === 1){ const [p] = pointers.values(); gesture = {type:'pan', start:p, last:p, moved:99, kind:'touch'}; }
+  }else if(!pointers.size){
+    const [x, y] = local(event.clientX, event.clientY);
+    const dx = event.clientX - gesture.start[0], dy = event.clientY - gesture.start[1];
+    if(event.type === 'pointerup' && gesture.moved < 10){
+      if(gesture.kind === 'mouse') zoom.toggle(x, y);
+      else if(lastTap && performance.now() - lastTap.time < 320 && Math.hypot(x - lastTap.x, y - lastTap.y) < 40){ zoom.toggle(x, y); lastTap = null; }
+      else lastTap = {time:performance.now(), x, y};
+    }else if(zoom.scale <= 1 && gesture.kind !== 'mouse' && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.5){
+      showViewer(viewerIndex + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+    }
+  }
+  if(!pointers.size){ gesture = null; stage.classList.remove('is-gesturing', 'is-dragging'); }
+}
+stage.addEventListener('pointerup', endPointer);
+stage.addEventListener('pointercancel', endPointer);
+let wheelEnd = 0;
+stage.addEventListener('wheel', event => {
+  event.preventDefault();
+  const [x, y] = local(event.clientX, event.clientY);
+  stage.classList.add('is-gesturing');
+  zoom.to(zoom.scale * Math.exp(-event.deltaY * (event.ctrlKey ? .01 : .002)), x, y);
+  clearTimeout(wheelEnd); wheelEnd = setTimeout(() => stage.classList.remove('is-gesturing'), 160);
+}, {passive:false});
 /* ---------- FAQ: answers open and close with their height ---------- */
 for(const details of $$('.questions details')){
-  const summary = details.querySelector('summary');
+  const summary = $('summary', details);
   summary.addEventListener('click', event => {
     if(calm()) return;
     event.preventDefault();
@@ -343,8 +377,7 @@ for(const details of $$('.questions details')){
       details.classList.remove('is-closing');
       details.open = true;
       to = details.getBoundingClientRect().height;
-      const answer = details.querySelector('p');
-      track(answer.animate([{opacity:0, transform:'translateY(-6px)'}, {opacity:1, transform:'none'}], {duration:520, delay:60, easing:EASE_OUT, fill:'backwards'}));
+      track($('p', details).animate([{opacity:0, transform:'translateY(-6px)'}, {opacity:1, transform:'none'}], {duration:520, delay:60, easing:EASE_OUT, fill:'backwards'}));
     }
     const anim = details._anim = details.animate([{height:`${from}px`}, {height:`${to}px`}], {duration:closing ? 380 : 480, easing:EASE_OUT});
     anim.finished.then(() => {
@@ -354,12 +387,10 @@ for(const details of $$('.questions details')){
     }, () => {});
   });
 }
-
 /* ---------- Header and in-page navigation ---------- */
 const navLinks = $$('.desktop-nav a[href^="#"], .menu-dialog nav a');
-const zones = ['#prace', '#o-mne', '#kontakt'].map(hash => [hash, $(hash)]);
-// Layout is measured once (and again when the page changes size), never inside the
-// scroll handler: scrolling only reads scrollY and flips a couple of classes.
+const zones = ['#prace', '#o-mne', '#otazky', '#kontakt'].map(hash => [hash, $(hash)]);
+// Layout is measured once (and on resize), never inside the scroll handler.
 const layout = {zoneTops:[], docHeight:0, viewport:0, headerHeight:80};
 function measure(){
   layout.zoneTops = zones.map(([, element]) => element.getBoundingClientRect().top + window.scrollY);
@@ -367,12 +398,9 @@ function measure(){
   layout.viewport = window.innerHeight;
   layout.headerHeight = parseFloat(getComputedStyle(root).getPropertyValue('--header-h')) || 80;
 }
-const headerHeight = () => layout.headerHeight;
 let lastY = window.scrollY, travel = 0, travelDirection = 0, headerLock = null, activeHash = null;
 function updateHeader(){
-  const y = Math.max(0, window.scrollY);
-  const dy = y - lastY; lastY = y;
-  // Count how far the page has moved in one direction; tiny reversals don't toggle the bar.
+  const y = Math.max(0, window.scrollY), dy = y - lastY; lastY = y;
   if(dy){
     const direction = Math.sign(dy);
     if(direction !== travelDirection){ travelDirection = direction; travel = 0; }
@@ -383,8 +411,6 @@ function updateHeader(){
   else if(y < 120 || header.querySelector(':focus-visible')) hidden = false;
   else if(travelDirection > 0 && travel > 10) hidden = true;
   else if(travelDirection < 0 && travel > 48) hidden = false;
-  // Transparent only at the very top; wherever the bar is visible further down it is solid,
-  // so page text never runs underneath the wordmark.
   header.classList.toggle('is-solid', y > 120);
   header.classList.toggle('is-hidden', hidden);
 }
@@ -431,25 +457,20 @@ function scrollToY(y, done){
   };
   job.raf = requestAnimationFrame(step);
 }
-// A malformed hash (e.g. "#%") makes decodeURIComponent throw; treat it as "no target".
 const byHash = hash => { try{ return document.getElementById(decodeURIComponent(hash.slice(1))); }catch{ return null; } };
-function goTo(hash, {focus=false}={}){
+function goTo(hash, {focus = false} = {}){
   const target = byHash(hash);
   if(!target) return;
   stopScroll();
   const top = target === hero ? 0 : target.getBoundingClientRect().top + window.scrollY;
   const goingDown = top > window.scrollY + 1;
-  // Reading down: the header steps aside and the section lands flush.
-  // Going back up: the header stays and the section lands just below it.
+  // Reading down: the header steps aside and the section lands flush. Going back up: it stays.
   headerLock = top < 1 ? 'top' : (goingDown || target.dataset.land === 'flush') ? 'hidden' : 'shown';
-  const offset = headerLock === 'shown' ? headerHeight() : 0;
-  const maxY = root.scrollHeight - window.innerHeight;
-  const y = Math.round(Math.max(0, Math.min(maxY, top - offset)));
-  try{ history.replaceState(null, '', hash); }catch{} // file:// and sandboxed previews may refuse
+  const offset = headerLock === 'shown' ? layout.headerHeight : 0;
+  const y = Math.round(Math.max(0, Math.min(root.scrollHeight - window.innerHeight, top - offset)));
+  try{ history.replaceState(null, '', hash); }catch{}
   updateHeader();
   scrollToY(y, () => {
-    // Forget the distance the programmatic scroll travelled, otherwise a long jump back up
-    // counts as "scrolling up" and the header slides over the section that just landed flush.
     headerLock = null; lastY = window.scrollY; travel = 0; travelDirection = 0; onScroll();
     if(focus){
       if(!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
@@ -464,20 +485,12 @@ document.addEventListener('click', event => {
   if(hash.length < 2 || !byHash(hash)) return;
   event.preventDefault();
   const options = {focus:event.detail === 0};
-  if(menu.contains(link)) closeDialog(menu).then(() => goTo(hash, options));
+  if(menu.contains(link)){ menu._opener = null; closeDialog(menu).then(() => goTo(hash, options)); }
   else goTo(hash, options);
 });
-
 /* ---------- Visibility-driven bits ---------- */
 if('IntersectionObserver' in window){
-  // Several entries can queue up between callbacks; the last one is the current state.
   new IntersectionObserver(entries => { heroVisible = entries.at(-1).isIntersecting; updateBar(); }, {threshold:0}).observe(hero);
   new IntersectionObserver(entries => { contactVisible = entries.at(-1).isIntersecting; updateBar(); }, {threshold:0.1}).observe($('.contact'));
 }
-// Content does not fade or slide in while scrolling: photos are simply there when they
-// arrive. Every image is decoded ahead of time so none of them paints in late.
-const decodeAll = () => { for(const image of $$('img')) if(image.decode) image.decode().catch(() => {}); };
-if('requestIdleCallback' in window) requestIdleCallback(decodeAll, {timeout:1200}); else setTimeout(decodeAll, 300);
-
-/* ---------- First screen ---------- */
-// The headline's entrance lives in style.css (hero-in), so it starts with the first paint.
+})();

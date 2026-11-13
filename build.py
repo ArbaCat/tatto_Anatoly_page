@@ -1,4 +1,4 @@
-"""Inline style.css, app.js and assets/*.jpg into one standalone HTML file.
+"""Inline style.css, app.js and the images under assets/ into one standalone HTML file.
 
 Usage: python3 build.py <site folder> <output.html>
 """
@@ -21,7 +21,8 @@ for pattern, what in ((STYLE, 'style.css <link>'), (SCRIPT, 'app.js <script>')):
 
 # Relative references only ("assets/x.jpg", 'assets/x.jpg', url('assets/x.jpg')). Absolute URLs such
 # as og:image ("https://…/assets/og.jpg") must stay URLs: social networks cannot read data: URIs.
-ASSET = re.compile(r'(?<![\w/.:-])assets/([\w-]+\.(jpe?g|png|svg|webp))')
+# Sub-folders are allowed (assets/works/x.jpg); folder names cannot contain dots, so no "..".
+ASSET = re.compile(r'(?<![\w/.:-])assets/((?:[\w-]+/)*[\w-]+\.(jpe?g|png|svg|webp))')
 MIME = {'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'svg': 'image/svg+xml', 'webp': 'image/webp'}
 
 def inline_assets(text):
@@ -36,7 +37,7 @@ if html.count('</body>') != 1:
     sys.exit('index.html: expected exactly one </body>')
 html = html.replace('</body>', '<script>' + js + '</script>\n</body>')
 html = inline_assets(html)
-if re.search(r'(?<![\w/.:-])assets/', html):
+if re.search(r'(?<![\w/.:-])assets/[\w/-]+\.\w+', html):
     sys.exit('unresolved relative asset path (only assets/*.jpg|png|svg|webp can be inlined)')
 out.write_text(html, encoding='utf-8')
 print(out, len(html))

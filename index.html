@@ -49,15 +49,30 @@
   <script src="app.js" defer></script>
 </head>
 <body>
+  <!-- Icons: one meaning each. chat = write to Anatoly, external = leaves the site,
+       zoom = enlarge, arrows = switch / scroll, close = close. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4.5 19.5l1.2-3.6A7.5 7.5 0 1 1 8.6 18.6z"/><path d="M9 11.5h.01M12 11.5h.01M15 11.5h.01"/></symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3.75" y="3.75" width="16.5" height="16.5" rx="4.75"/><circle cx="12" cy="12" r="3.9"/><path d="M17.1 6.9h.01"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4.5h5.5V10M19.5 4.5L11 13M10 5.5H6.5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V14"/></symbol>
+    <symbol id="i-zoom-in" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.25"/><path d="M15.2 15.2l4.8 4.8M10.5 7.75v5.5M7.75 10.5h5.5"/></symbol>
+    <symbol id="i-zoom-out" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.25"/><path d="M15.2 15.2l4.8 4.8M7.75 10.5h5.5"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  </svg>
+
   <a class="skip" href="#main">Preskočiť na obsah</a>
   <header class="header">
     <a class="wordmark" href="#top" aria-label="Anatoly Tsar — úvod">ANATOLY TSAR</a>
     <nav class="desktop-nav" aria-label="Hlavná navigácia">
-      <a href="#prace">Práce</a><a href="#o-mne">O mne</a>
-      <button class="pill" data-book><span>Konzultácia</span><span class="arr" aria-hidden="true"><i>↗︎</i></span></button>
+      <a href="#prace">Práce</a><a href="#o-mne">O mne</a><a href="#otazky">Otázky</a>
+      <a class="btn btn--primary btn--small" href="https://wa.me/421915317473?text=Ahoj%20Anatoly%2C%20chcel%2Fa%20by%20som%20sa%20poradi%C5%A5%20o%20tetovan%C3%AD." target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-chat"/></svg>Napísať Anatolymu<span class="sr-only"> (WhatsApp, nové okno)</span></a>
     </nav>
     <button class="menu-button" aria-haspopup="dialog" aria-controls="menu-dialog">Menu <span class="burger" aria-hidden="true"><i></i><i></i></span></button>
   </header>
+
   <main id="main">
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="hero-ambience" aria-hidden="true"></div>
@@ -70,57 +85,140 @@
       </picture>
       <div class="hero-shade" aria-hidden="true"></div>
       <div class="hero-copy">
-        <p class="location" lang="en">TATTOO ARTIST & PAINTER</p>
+        <p class="hero-name">Anatoly Tsar</p>
         <h1 id="hero-title">Tetovanie<br>s vlastným rukopisom.</h1>
-        <p class="hero-place">Anatoly Tsar <span>·</span> Banská Bystrica</p>
-        <a class="text-link" href="#prace"><span class="tl">Pozrieť práce</span><span class="arr arr--down" aria-hidden="true"><i>↓</i></span></a>
+        <p class="hero-meta">Tatér a maliar <span aria-hidden="true">·</span> Banská Bystrica</p>
+        <div class="hero-actions">
+          <div class="cta">
+            <a class="btn btn--primary" href="https://wa.me/421915317473?text=Ahoj%20Anatoly%2C%20chcel%2Fa%20by%20som%20sa%20poradi%C5%A5%20o%20tetovan%C3%AD." target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-chat"/></svg>Napísať Anatolymu<span class="sr-only"> (WhatsApp, nové okno)</span></a>
+            <a class="icon-btn" href="https://ig.me/m/anatoly.tattoo" target="_blank" rel="noopener noreferrer" aria-label="Napísať na Instagrame (nové okno)" title="Napísať na Instagrame"><svg class="icon"><use href="#i-instagram"/></svg></a>
+          </div>
+          <a class="text-link" href="#prace"><span class="tl">Pozrieť práce</span><svg class="icon icon--down"><use href="#i-down"/></svg></a>
+        </div>
+        <p class="cta-note">Stačí prvá predstava. Detaily preberieme spolu.</p>
       </div>
       <a href="#prace" class="scroll-cue" aria-label="Prejsť na vybrané práce"><span></span></a>
     </section>
 
-    <section class="spotlight" id="prace" data-land="flush" aria-label="Vybrané práce">
-      <div class="spotlight-top"><h2>Vybrané práce</h2><span class="stack counter" id="work-counter" aria-hidden="true"><span class="is-active">01 / 05</span></span><span class="sr-only" id="work-status" aria-live="polite"></span></div>
-      <button class="spotlight-photo" id="open-featured" aria-label="Zväčšiť prácu: Farba. Svetlo. Detail.">
-        <img class="is-active" src="assets/colour.jpg" alt="Farebný portrét s modrým závojom a zlatou svätožiarou na predlaktí">
-        <span class="image-affordance" aria-hidden="true">Zväčšiť <span class="arr"><i>↗︎</i></span></span>
-      </button>
-      <div class="spotlight-bottom">
-        <div class="work-caption stack" id="work-caption"><div class="is-active"><p>FARBA · PREDLAKTIE</p><h3>Farba. Svetlo. Detail.</h3></div></div>
-        <div class="work-controls"><button class="round" id="previous-work" aria-label="Predchádzajúca práca"><span class="arr arr--left" aria-hidden="true"><i>←</i></span></button><button class="round" id="next-work" aria-label="Ďalšia práca"><span class="arr arr--right" aria-hidden="true"><i>→</i></span></button></div>
-        <button class="text-link" id="work-detail"><span class="tl">Detail práce</span><span class="arr" aria-hidden="true"><i>↗︎</i></span></button>
+    <section class="works" id="prace" data-land="flush" aria-labelledby="works-title">
+      <h2 class="section-title" id="works-title">Vybrané práce</h2>
+      <span class="sr-only" id="work-status" aria-live="polite"></span>
+      <div class="featured">
+        <!-- The stage shows the whole photo (no crop, no fades); a click opens the detail view. -->
+        <button class="featured-stage" id="open-featured" aria-label="Zobraziť detail: Farba. Svetlo. Detail.">
+          <img class="is-active" src="assets/works/colour.jpg" sizes="(max-width:900px) 100vw, 60vw" alt="Farebný portrét s modrým závojom a zlatou svätožiarou na predlaktí">
+        </button>
+        <div class="featured-info">
+          <div class="work-caption stack" id="work-caption"><div class="is-active"><p class="caption">Farba · predlaktie</p><h3>Farba. Svetlo. Detail.</h3><p class="work-desc">Živopisný portrét, sýta modrá a teplé zlaté tóny.</p></div></div>
+          <div class="featured-controls">
+            <button class="round" id="previous-work" aria-label="Predchádzajúca práca"><svg class="icon"><use href="#i-left"/></svg></button>
+            <span class="counter stack" id="work-counter" aria-hidden="true"><span class="is-active">01 / 05</span></span>
+            <button class="round" id="next-work" aria-label="Ďalšia práca"><svg class="icon"><use href="#i-right"/></svg></button>
+            <button class="btn btn--secondary" id="work-detail"><svg class="icon"><use href="#i-zoom-in"/></svg><span class="label">Zobraziť detail</span></button>
+          </div>
+          <!-- The portfolio. One <li> per work; everything else (featured layers, captions,
+               detail view) is built from this list. Photos live in assets/works/: the original
+               <name>.jpg plus <name>-480.jpg and <name>-960.jpg from scripts/make_work_images.py.
+               data-w / data-h: size of the original. --pos: where the thumbnail crop sits. -->
+          <ul class="thumbs" id="work-list" aria-label="Všetky práce">
+            <li style="--pos:50% 38%"><a class="thumb" href="assets/works/colour.jpg" data-w="360" data-h="640" data-title="Farba. Svetlo. Detail." data-category="Farba · predlaktie" data-description="Živopisný portrét, sýta modrá a teplé zlaté tóny." aria-current="true"><img src="assets/works/colour-480.jpg" width="360" height="640" alt="Farebný portrét s modrým závojom a zlatou svätožiarou na predlaktí" fetchpriority="low" decoding="async"></a></li>
+            <li style="--pos:50% 50%"><a class="thumb" href="assets/works/black-grey.jpg" data-w="640" data-h="640" data-title="Čierna a sivá." data-category="Čierno-sivá kompozícia" data-description="Výraz, svetlo a hĺbka bez farby. Fotografia zachytáva prácu z viacerých uhlov."><img src="assets/works/black-grey-480.jpg" width="480" height="480" alt="Čierno-sivá bojovníčka so zvieracou hlavou; tri pohľady na tetovanie" fetchpriority="low" decoding="async"></a></li>
+            <li style="--pos:50% 52%"><a class="thumb" href="assets/works/ornament.jpg" data-w="1440" data-h="1440" data-title="Ornament, ktorý patrí k telu." data-category="Folklórny ornament · chrbát" data-description="Kvetinový motív rozprestretý cez ramená. Symetria, výrazná kontúra a farba."><img src="assets/works/ornament-480.jpg" width="480" height="480" alt="Farebný symetrický kvetinový ornament na hornej časti chrbta" fetchpriority="low" decoding="async"></a></li>
+            <li style="--pos:72% 50%"><a class="thumb" href="assets/works/japanese.jpg" data-w="1440" data-h="1440" data-title="Líška a pivónie." data-category="Farebná kompozícia · rukáv" data-description="Rozsiahlejšia farebná kompozícia. Celkový pohľad a detail z pôvodnej fotografie."><img src="assets/works/japanese-480.jpg" width="480" height="480" alt="Farebný rukáv s líškou a pivóniami, celkový pohľad a detail" fetchpriority="low" decoding="async"></a></li>
+            <li style="--pos:50% 45%"><a class="thumb" href="assets/works/neo.jpg" data-w="768" data-h="960" data-title="Ilustrácia na koži." data-category="Farebný portrét · rameno" data-description="Ilustratívny portrét s teplou paletou a výraznými obrysmi."><img src="assets/works/neo-480.jpg" width="480" height="600" alt="Farebný ilustrovaný portrét ženy na ramene" fetchpriority="low" decoding="async"></a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="instagram-line">Ďalšie práce a momenty z tvorby: <a class="text-link" href="https://www.instagram.com/anatoly.tattoo/" target="_blank" rel="noopener noreferrer"><span class="tl">@anatoly.tattoo</span><svg class="icon"><use href="#i-external"/></svg><span class="sr-only"> (Instagram, nové okno)</span></a></p>
+    </section>
+
+    <section class="about" id="o-mne" aria-labelledby="about-title">
+      <div class="portrait-wrap"><img src="assets/anatoly.jpg" width="480" height="640" fetchpriority="low" decoding="async" alt="Čiernobiely portrét Anatolyho Tsara"></div>
+      <div class="about-copy">
+        <p class="eyebrow">O mne</p>
+        <h2 class="section-title" id="about-title">Najprv maliar.<br>Potom tatér.</h2>
+        <p>Kresba a maľba sú so mnou od detstva. Päť rokov som študoval maľbu a od roku 2012 tvorím aj na koži.</p>
+        <p>Dnes tetujem v Banskej Bystrici. Máš konkrétny motív alebo len prvú predstavu? Môžeme začať rozhovorom.</p>
+        <div class="cta">
+          <a class="btn btn--primary" href="https://wa.me/421915317473?text=Ahoj%20Anatoly%2C%20chcel%2Fa%20by%20som%20sa%20poradi%C5%A5%20o%20tetovan%C3%AD." target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-chat"/></svg>Napísať Anatolymu<span class="sr-only"> (WhatsApp, nové okno)</span></a>
+          <a class="icon-btn" href="https://ig.me/m/anatoly.tattoo" target="_blank" rel="noopener noreferrer" aria-label="Napísať na Instagrame (nové okno)" title="Napísať na Instagrame"><svg class="icon"><use href="#i-instagram"/></svg></a>
+        </div>
       </div>
     </section>
 
-    <section class="work-pair" aria-label="Ďalšie vybrané tetovania">
-      <button class="work-tile" data-work="1"><span class="tile-media"><img src="assets/black-grey.jpg" fetchpriority="low" alt="Čierno-sivá kompozícia s bojovníčkou a zvieracou hlavou, pohľady na tetovanie"></span><span class="tile-label"><span>Čierna a sivá</span><span class="arr" aria-hidden="true"><i>↗︎</i></span></span></button>
-      <button class="work-tile" data-work="2"><span class="tile-media"><img src="assets/ornament.jpg" fetchpriority="low" alt="Symetrický farebný kvetinový ornament cez hornú časť chrbta"></span><span class="tile-label"><span>Ornament</span><span class="arr" aria-hidden="true"><i>↗︎</i></span></span></button>
+    <section class="faq" id="otazky" aria-labelledby="faq-title">
+      <div>
+        <p class="eyebrow">Pred prvou správou</p>
+        <h2 class="section-title" id="faq-title">Stačí prvá predstava.</h2>
+        <p class="faq-intro">Nemusíš poznať názov štýlu ani mať hotový návrh.</p>
+      </div>
+      <div class="questions">
+        <details><summary>Kde tetuješ?<span class="plus" aria-hidden="true">+</span></summary><p>V Banskej Bystrici. Konkrétne miesto a termín si dohodneme v správe.</p></details>
+        <details><summary>Musím mať hotový návrh?<span class="plus" aria-hidden="true">+</span></summary><p>Nie. Môžeš začať tým, čo sa ti páči, alebo miestom na tele. Smer nájdeme spolu v rozhovore.</p></details>
+        <details><summary>Čo mám poslať v prvej správe?<span class="plus" aria-hidden="true">+</span></summary><p>Pár slov o nápade, miesto na tele a približnú veľkosť. Pomôžu aj referencie — obrázky alebo práce, ktoré sa ti páčia. Nič z toho nie je povinné.</p></details>
+        <details><summary>Ako sa dohodneme na cene a termíne?<span class="plus" aria-hidden="true">+</span></summary><p>Cenu a termín si dohodneme v rozhovore podľa motívu, veľkosti a miesta na tele. Prvá správa je len začiatok rozhovoru, nie rezervácia.</p></details>
+      </div>
     </section>
-    <div class="instagram-line"><p>Ďalšie práce a momenty z tvorby.</p><a class="text-link" href="https://www.instagram.com/anatoly.tattoo/" target="_blank" rel="noopener noreferrer"><span class="tl">@anatoly.tattoo</span><span class="arr" aria-hidden="true"><i>↗︎</i></span><span class="sr-only"> — otvorí sa v novom okne</span></a></div>
 
-    <section class="about" id="o-mne" aria-labelledby="about-title">
-      <div class="portrait-wrap"><img src="assets/anatoly.jpg" fetchpriority="low" alt="Čiernobiely portrét Anatolyho Tsara"></div>
-      <div class="about-copy"><p class="eyebrow">ANATOLY TSAR</p><h2 id="about-title">Najprv maliar.<br>Potom tatér.</h2><p>Kresba a maľba sú so mnou od detstva. Päť rokov som študoval maľbu a od roku 2012 tvorím aj na koži.</p><p>Dnes tetujem v Banskej Bystrici. Máš konkrétny motív alebo len prvú predstavu? Môžeme začať rozhovorom.</p><button class="text-link" data-book><span class="tl">Spoznajme tvoj nápad</span><span class="arr" aria-hidden="true"><i>↗︎</i></span></button></div>
+    <section class="contact" id="kontakt" aria-labelledby="contact-title">
+      <p class="eyebrow">Ďalší krok</p>
+      <h2 class="section-title" id="contact-title">Tvoj nápad začína<br>rozhovorom.</h2>
+      <div class="cta">
+        <a class="btn btn--primary" href="https://wa.me/421915317473?text=Ahoj%20Anatoly%2C%20chcel%2Fa%20by%20som%20sa%20poradi%C5%A5%20o%20tetovan%C3%AD." target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-chat"/></svg>Napísať Anatolymu<span class="sr-only"> (WhatsApp, nové okno)</span></a>
+        <a class="icon-btn" href="https://ig.me/m/anatoly.tattoo" target="_blank" rel="noopener noreferrer" aria-label="Napísať na Instagrame (nové okno)" title="Napísať na Instagrame"><svg class="icon"><use href="#i-instagram"/></svg></a>
+      </div>
+      <p class="cta-note">Stačí prvá predstava. Detaily preberieme spolu.</p>
+      <p class="social"><a class="text-link" href="https://www.instagram.com/anatoly.tattoo/" target="_blank" rel="noopener noreferrer"><span class="tl">Instagram</span><svg class="icon"><use href="#i-external"/></svg><span class="sr-only"> (nové okno)</span></a><a class="text-link" href="https://www.facebook.com/anatoly.tattoo" target="_blank" rel="noopener noreferrer"><span class="tl">Facebook</span><svg class="icon"><use href="#i-external"/></svg><span class="sr-only"> (nové okno)</span></a></p>
     </section>
-
-    <section class="before-booking" aria-labelledby="before-title"><div><p class="eyebrow">PRED PRVÝM STRETNUTÍM</p><h2 id="before-title">Stačí prvá predstava.</h2><p>Nemusíš poznať názov štýlu ani mať hotový návrh.</p></div><div class="questions">
-      <details><summary>Čo mám napísať do správy?<span class="plus" aria-hidden="true">+</span></summary><p>Opíš, čo ťa láka. Ak vieš, pridaj miesto na tele a približnú veľkosť. Pomôžu aj odkazy na práce, ktoré sa ti páčia.</p></details>
-      <details><summary>Ako zistím cenu a voľný termín?<span class="plus" aria-hidden="true">+</span></summary><p>Aktuálnu cenu a možnosti termínu si overíme pri konzultácii podľa konkrétneho motívu a rozsahu. Odoslaná správa ešte nie je potvrdená rezervácia.</p></details>
-      <details><summary>Môžem prísť aj bez presného nápadu?<span class="plus" aria-hidden="true">+</span></summary><p>Áno, môžeš začať tým, čo sa ti páči, alebo miestom na tele. Do správy pokojne napíš, že zatiaľ hľadáš smer.</p></details>
-    </div></section>
-
-    <section class="contact" id="kontakt" aria-labelledby="contact-title"><p class="eyebrow">ĎALŠÍ KROK</p><h2 id="contact-title">Tvoj nápad začína<br>rozhovorom.</h2><button class="pill contact-button" data-book><span>Dohodnúť konzultáciu</span><span class="arr" aria-hidden="true"><i>↗︎</i></span></button>
-      <div class="contact-channels"><a class="text-link mail-link" href="https://wa.me/421915317473" target="_blank" rel="noopener noreferrer"><span class="tl">WhatsApp</span><span class="arr" aria-hidden="true"><i>↗︎</i></span><span class="sr-only"> — nové okno</span></a><a class="text-link mail-link" href="https://www.instagram.com/anatoly.tattoo/" target="_blank" rel="noopener noreferrer"><span class="tl">Instagram</span><span class="arr" aria-hidden="true"><i>↗︎</i></span><span class="sr-only"> — nové okno</span></a><a class="text-link mail-link" href="https://www.facebook.com/anatoly.tattoo" target="_blank" rel="noopener noreferrer"><span class="tl">Facebook</span><span class="arr" aria-hidden="true"><i>↗︎</i></span><span class="sr-only"> — nové okno</span></a></div></section>
   </main>
-  <footer><a class="wordmark" href="#top">ANATOLY TSAR</a><p>Banská Bystrica</p><a class="foot-link" href="https://www.instagram.com/anatoly.tattoo/" target="_blank" rel="noopener noreferrer">Instagram <span class="arr" aria-hidden="true"><i>↗︎</i></span><span class="sr-only"> — nové okno</span></a></footer>
-  <div class="mobile-book" hidden><button class="pill" data-book><span>Dohodnúť konzultáciu</span><span class="arr" aria-hidden="true"><i>↗︎</i></span></button></div>
 
-  <dialog id="menu-dialog" class="menu-dialog" aria-labelledby="menu-title"><div class="dialog-top"><h2 id="menu-title">ANATOLY TSAR</h2><button class="close round" aria-label="Zavrieť menu"><span class="x" aria-hidden="true">×</span></button></div><nav aria-label="Mobilná navigácia"><a href="#prace">Práce <span class="arr" aria-hidden="true"><i>↗︎</i></span></a><a href="#o-mne">O mne <span class="arr" aria-hidden="true"><i>↗︎</i></span></a><a href="#kontakt">Kontakt <span class="arr" aria-hidden="true"><i>↗︎</i></span></a></nav><button class="pill" data-book><span>Konzultácia</span><span class="arr" aria-hidden="true"><i>↗︎</i></span></button></dialog>
+  <footer>
+    <a class="wordmark" href="#top">ANATOLY TSAR</a>
+    <p>Tatér a maliar · Banská Bystrica</p>
+    <p class="social"><a class="text-link" href="https://www.instagram.com/anatoly.tattoo/" target="_blank" rel="noopener noreferrer"><span class="tl">Instagram</span><svg class="icon"><use href="#i-external"/></svg><span class="sr-only"> (nové okno)</span></a><a class="text-link" href="https://www.facebook.com/anatoly.tattoo" target="_blank" rel="noopener noreferrer"><span class="tl">Facebook</span><svg class="icon"><use href="#i-external"/></svg><span class="sr-only"> (nové okno)</span></a></p>
+  </footer>
 
-  <dialog id="gallery-dialog" class="gallery-dialog" aria-label="Farba. Svetlo. Detail."><div class="dialog-top"><span class="sr-only" id="gallery-status" aria-live="polite"></span><span class="stack counter" id="gallery-count"><span class="is-active">01 / 05</span></span><button class="close round" aria-label="Zavrieť detail práce"><span class="x" aria-hidden="true">×</span></button></div><div class="gallery-body"><div class="gallery-photo-wrap"><img class="is-active" src="assets/colour.jpg" alt="Farebný portrét s modrým závojom a zlatou svätožiarou na predlaktí"><div class="gallery-arrows"><button class="round" id="gallery-prev" aria-label="Predchádzajúca fotografia"><span class="arr arr--left" aria-hidden="true"><i>←</i></span></button><button class="round" id="gallery-next" aria-label="Ďalšia fotografia"><span class="arr arr--right" aria-hidden="true"><i>→</i></span></button></div></div><div class="gallery-copy"><div class="stack gallery-text" id="gallery-text"><div class="is-active"><p class="eyebrow">FARBA · PREDLAKTIE</p><h2>Farba. Svetlo. Detail.</h2><p class="gallery-description">Živopisný portrét, sýta modrá a teplé zlaté tóny. Pozri si celú kompozíciu v pôvodnej fotografii.</p></div></div><button class="pill" id="gallery-consult"><span>Prebrať podobný nápad</span><span class="arr" aria-hidden="true"><i>↗︎</i></span></button><p class="gallery-note">Ukážka dokončenej práce. Nie je to voľný návrh.</p></div></div></dialog>
+  <!-- Phones: the main action stays at hand after the first screen. -->
+  <div class="mobile-cta" hidden>
+    <a class="btn btn--primary" href="https://wa.me/421915317473?text=Ahoj%20Anatoly%2C%20chcel%2Fa%20by%20som%20sa%20poradi%C5%A5%20o%20tetovan%C3%AD." target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-chat"/></svg>Napísať Anatolymu<span class="sr-only"> (WhatsApp, nové okno)</span></a>
+    <a class="icon-btn" href="https://ig.me/m/anatoly.tattoo" target="_blank" rel="noopener noreferrer" aria-label="Napísať na Instagrame (nové okno)" title="Napísať na Instagrame"><svg class="icon"><use href="#i-instagram"/></svg></a>
+  </div>
 
-  <dialog id="booking-dialog" class="booking-dialog" aria-labelledby="booking-title"><div class="dialog-top"><span>KONZULTÁCIA</span><button class="close round" aria-label="Zavrieť konzultáciu"><span class="x" aria-hidden="true">×</span></button></div><div class="booking-content"><h2 id="booking-title">Čo máš na mysli?</h2><p class="booking-intro">Pár slov stačí. Pripravíme správu pre Anatolyho.</p>
-    <form id="booking-form"><label>Tvoje meno <input name="name" autocomplete="given-name" required maxlength="100" placeholder="Ako ťa oslovovať?"></label><label>E-mail, telefón alebo Instagram <input name="contact" required maxlength="180" placeholder="Kam ti môže Anatoly odpovedať?"></label><label>Tvoj nápad <textarea name="idea" required minlength="5" maxlength="3000" rows="4" placeholder="Motív, miesto na tele, veľkosť… alebo len to, čo sa ti páči."></textarea></label><p class="form-note">Formulár nič neodosiela ani neukladá. Pripraví text správy a ty si vyberieš, kam ju pošleš: WhatsApp, Instagram alebo Facebook.</p><button class="pill submit-button" type="submit"><span>Pripraviť správu</span><span class="arr" aria-hidden="true"><i>↗︎</i></span></button></form>
-    <section id="message-result" hidden aria-labelledby="result-title"><h3 id="result-title" tabindex="-1">Správa je pripravená.</h3><p>Vyber, kam ju pošleš. Do WhatsAppu sa vloží sama, pre Instagram a Facebook ju skopírujeme.</p><label>Text správy<textarea id="prepared-message" rows="8" readonly></textarea></label><div class="message-actions"><a class="pill" id="whatsapp-message" href="https://wa.me/421915317473" target="_blank" rel="noopener noreferrer"><span>WhatsApp</span><span class="arr" aria-hidden="true"><i>↗︎</i></span><span class="sr-only"> — nové okno</span></a><a class="pill" data-copy-note="Vlož ju do správy na Instagrame." href="https://www.instagram.com/anatoly.tattoo/" target="_blank" rel="noopener noreferrer"><span>Instagram</span><span class="arr" aria-hidden="true"><i>↗︎</i></span><span class="sr-only"> — nové okno, správa sa skopíruje</span></a><a class="pill" data-copy-note="Vlož ju do správy na Facebooku." href="https://www.facebook.com/anatoly.tattoo" target="_blank" rel="noopener noreferrer"><span>Facebook</span><span class="arr" aria-hidden="true"><i>↗︎</i></span><span class="sr-only"> — nové okno, správa sa skopíruje</span></a></div><button class="text-link" id="copy-message"><span class="tl">Kopírovať správu</span></button><button class="text-link" id="edit-message"><span class="tl">Upraviť údaje</span></button><p id="copy-status" role="status"></p></section>
-  </div></dialog>
+  <dialog id="menu-dialog" class="menu-dialog" aria-label="Menu">
+    <div class="dialog-top"><span class="wordmark">ANATOLY TSAR</span><button class="close round" aria-label="Zavrieť menu"><svg class="icon"><use href="#i-close"/></svg></button></div>
+    <nav aria-label="Mobilná navigácia"><a href="#prace">Práce</a><a href="#o-mne">O mne</a><a href="#otazky">Otázky</a><a href="#kontakt">Kontakt</a></nav>
+    <div class="cta">
+      <a class="btn btn--primary" href="https://wa.me/421915317473?text=Ahoj%20Anatoly%2C%20chcel%2Fa%20by%20som%20sa%20poradi%C5%A5%20o%20tetovan%C3%AD." target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-chat"/></svg>Napísať Anatolymu<span class="sr-only"> (WhatsApp, nové okno)</span></a>
+      <a class="icon-btn" href="https://ig.me/m/anatoly.tattoo" target="_blank" rel="noopener noreferrer" aria-label="Napísať na Instagrame (nové okno)" title="Napísať na Instagrame"><svg class="icon"><use href="#i-instagram"/></svg></a>
+    </div>
+    <p class="cta-note">Stačí prvá predstava. Detaily preberieme spolu.</p>
+  </dialog>
+
+  <!-- Detail view: the photo gets the whole screen except one compact bar. Click / double-tap
+       to zoom, wheel or pinch to zoom further, drag to move around the enlarged photo. -->
+  <dialog id="viewer" class="viewer" aria-labelledby="viewer-title">
+    <div class="viewer-stage" id="viewer-stage">
+      <img class="viewer-img" id="viewer-img" alt="" draggable="false">
+      <button class="round viewer-nav viewer-prev" id="viewer-prev" aria-label="Predchádzajúca práca"><svg class="icon"><use href="#i-left"/></svg></button>
+      <button class="round viewer-nav viewer-next" id="viewer-next" aria-label="Ďalšia práca"><svg class="icon"><use href="#i-right"/></svg></button>
+      <div class="viewer-top">
+        <span class="counter" id="viewer-count">01 / 05</span>
+        <span class="sr-only" id="viewer-status" aria-live="polite"></span>
+        <div class="viewer-tools">
+          <button class="round" id="viewer-zoom" aria-pressed="false" aria-label="Priblížiť"><svg class="icon icon--in"><use href="#i-zoom-in"/></svg><svg class="icon icon--out"><use href="#i-zoom-out"/></svg></button>
+          <button class="round close" aria-label="Zavrieť detail"><svg class="icon"><use href="#i-close"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="viewer-info" id="viewer-info">
+      <div class="viewer-text">
+        <p class="caption" id="viewer-category"></p>
+        <h2 id="viewer-title"></h2>
+        <div class="viewer-more" id="viewer-more"><p id="viewer-description"></p><p class="viewer-note">Ukážka dokončenej práce, nie voľný návrh.</p></div>
+        <button class="text-link viewer-toggle" id="viewer-toggle" aria-expanded="false" aria-controls="viewer-more"><span class="tl">Popis práce</span></button>
+      </div>
+      <a class="btn btn--primary" id="viewer-cta" href="https://wa.me/421915317473?text=Ahoj%20Anatoly%2C%20chcel%2Fa%20by%20som%20sa%20poradi%C5%A5%20o%20tetovan%C3%AD." target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-chat"/></svg>Chcem niečo podobné<span class="sr-only"> (WhatsApp, nové okno)</span></a>
+    </div>
+  </dialog>
 </body>
 </html>
