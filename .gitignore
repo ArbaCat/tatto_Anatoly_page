@@ -1,2 +1,4 @@
 .DS_Store
-.claude/
+# Only the preview config is shared; everything else in .claude/ is personal.
+.claude/*
+!.claude/launch.json
