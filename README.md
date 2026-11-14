@@ -1,6 +1,6 @@
 # Anatoly Tsar — сайт тату-мастера
 
-Одностраничная визитка: https://arbacat.github.io/tatto_Anatoly_page/
+Одностраничная визитка: https://anatolytattoo.sk/
 
 ## Запуск
 
@@ -42,11 +42,12 @@
 
 GitHub Pages из ветки `main`. Если после пуша сайт не обновился: `gh api -X POST repos/ArbaCat/tatto_Anatoly_page/pages/builds`.
 
-Свой домен:
+Домен `anatolytattoo.sk` (регистратор и DNS — WebSupport.sk, аккаунт Анатолия):
 
-1. У регистратора: A-записи корня на `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`; для `www` — CNAME на `arbacat.github.io`.
-2. Settings → Pages → Custom domain, после проверки DNS включить «Enforce HTTPS».
-3. Заменить старый адрес в `index.html` (canonical, og:url, og:image, JSON-LD) и обновить превью через Facebook Sharing Debugger.
+- DNS: A-записи корня на `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`; AAAA на `2606:50c0:8000::153` … `2606:50c0:8003::153`; для `www` — CNAME на `arbacat.github.io`.
+- GitHub: Settings → Pages → Custom domain `anatolytattoo.sk` (файл `CNAME` в корне), «Enforce HTTPS» включён, сертификат Let's Encrypt на корень и `www`.
+- `www`, `http://` и старый адрес `arbacat.github.io/tatto_Anatoly_page/` перенаправляются на `https://anatolytattoo.sk/`.
+- Адрес сайта в `index.html`: canonical, og:url, og:image, JSON-LD. При смене домена поменять там и в `CNAME`, превью обновить через Facebook Sharing Debugger.
 
 ## Связь
 
