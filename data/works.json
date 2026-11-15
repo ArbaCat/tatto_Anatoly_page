@@ -22,5 +22,13 @@
     "description": "Čiernobiely portrét anjela s výrazným tieňovaním a kontrastmi, vytetovaný na ramene.",
     "alt": "Čiernobiela postava anjela na ramene",
     "crop": "50% 50%"
+  },
+  {
+    "photo": "assets/works/mwidghs1-pl05j5cw.jpg",
+    "title": "Portrét Al Caponeho",
+    "category": "Čiernobiely realizmus · rameno",
+    "description": "Portrét Al Caponeho v klobúku a s cigárou, doplnený o mestskú scenériu a dobové auto.",
+    "alt": "Portrét Al Caponeho s dobovou mestskou scenériou na stehne",
+    "crop": "50% 45%"
   }
 ]
