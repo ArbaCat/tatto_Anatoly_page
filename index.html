@@ -105,14 +105,14 @@
       <span class="sr-only" id="work-status" aria-live="polite"></span>
       <div class="featured">
         <!-- The stage shows the whole photo (no crop, no fades); a click opens the detail view. -->
-        <button class="featured-stage" id="open-featured" aria-label="Zobraziť detail: Farba. Svetlo. Detail.">
+        <button class="featured-stage" id="open-featured" aria-label="Zobraziť detail: Madonna">
           <img class="is-active" src="assets/works/colour.jpg" sizes="(max-width:900px) 100vw, 60vw" alt="Farebný portrét s modrým závojom a zlatou svätožiarou na predlaktí">
         </button>
         <div class="featured-info">
-          <div class="work-caption stack" id="work-caption"><div class="is-active"><p class="caption">Farba · predlaktie</p><h3>Farba. Svetlo. Detail.</h3><p class="work-desc">Portrét v sýtej modrej a teplých zlatých tónoch.</p></div></div>
+          <div class="work-caption stack" id="work-caption"><div class="is-active"><p class="caption">Farba · predlaktie</p><h3>Madonna</h3><p class="work-desc">Portrét v sýtej modrej a teplých zlatých tónoch.</p></div></div>
           <div class="featured-controls">
             <button class="round" id="previous-work" aria-label="Predchádzajúca práca"><svg class="icon"><use href="#i-left"/></svg></button>
-            <span class="counter stack" id="work-counter" aria-hidden="true"><span class="is-active">01 / 05</span></span>
+            <span class="counter stack" id="work-counter" aria-hidden="true"><span class="is-active">01 / 02</span></span>
             <button class="round" id="next-work" aria-label="Ďalšia práca"><svg class="icon"><use href="#i-right"/></svg></button>
             <button class="btn btn--secondary" id="work-detail"><svg class="icon"><use href="#i-zoom-in"/></svg><span class="label">Zobraziť detail</span></button>
           </div>
@@ -123,11 +123,8 @@
                sizes/<name>-480.jpg and sizes/<name>-960.jpg. data-w / data-h: size of the original.
                --pos: where the thumbnail crop sits. -->
           <ul class="thumbs" id="work-list" aria-label="Všetky práce">
-            <li style="--pos:50% 38%"><a class="thumb" href="assets/works/colour.jpg" data-w="360" data-h="640" data-title="Farba. Svetlo. Detail." data-category="Farba · predlaktie" data-description="Portrét v sýtej modrej a teplých zlatých tónoch." aria-current="true"><img src="assets/works/sizes/colour-480.jpg" width="360" height="640" alt="Farebný portrét s modrým závojom a zlatou svätožiarou na predlaktí" fetchpriority="low" decoding="async"></a></li>
-            <li style="--pos:50% 50%"><a class="thumb" href="assets/works/black-grey.jpg" data-w="640" data-h="640" data-title="Čierna a sivá." data-category="Čierno-sivá kompozícia" data-description="Výraz, svetlo a hĺbka bez farby. Fotografia zachytáva prácu z viacerých uhlov."><img src="assets/works/sizes/black-grey-480.jpg" width="480" height="480" alt="Čierno-sivá bojovníčka so zvieracou hlavou; tri pohľady na tetovanie" fetchpriority="low" decoding="async"></a></li>
-            <li style="--pos:50% 52%"><a class="thumb" href="assets/works/ornament.jpg" data-w="1440" data-h="1440" data-title="Ornament, ktorý patrí k telu." data-category="Folklórny ornament · chrbát" data-description="Kvetinový motív rozprestretý cez ramená. Symetria, výrazná kontúra a farba."><img src="assets/works/sizes/ornament-480.jpg" width="480" height="480" alt="Farebný symetrický kvetinový ornament na hornej časti chrbta" fetchpriority="low" decoding="async"></a></li>
-            <li style="--pos:72% 50%"><a class="thumb" href="assets/works/japanese.jpg" data-w="1440" data-h="1440" data-title="Líška a pivónie." data-category="Farebná kompozícia · rukáv" data-description="Rozsiahlejšia farebná kompozícia. Celkový pohľad a detail z pôvodnej fotografie."><img src="assets/works/sizes/japanese-480.jpg" width="480" height="480" alt="Farebný rukáv s líškou a pivóniami, celkový pohľad a detail" fetchpriority="low" decoding="async"></a></li>
-            <li style="--pos:50% 45%"><a class="thumb" href="assets/works/neo.jpg" data-w="768" data-h="960" data-title="Ilustrácia na koži." data-category="Farebný portrét · rameno" data-description="Portrét v štýle ilustrácie. Teplé farby a výrazné obrysy."><img src="assets/works/sizes/neo-480.jpg" width="480" height="600" alt="Farebné tetovanie na ramene: portrét ženy v štýle ilustrácie." fetchpriority="low" decoding="async"></a></li>
+            <li style="--pos:50% 38%"><a class="thumb" href="assets/works/colour.jpg" data-w="360" data-h="640" data-title="Madonna" data-category="Farba · predlaktie" data-description="Portrét v sýtej modrej a teplých zlatých tónoch." aria-current="true"><img src="assets/works/sizes/colour-480.jpg" width="360" height="640" alt="Farebný portrét s modrým závojom a zlatou svätožiarou na predlaktí" fetchpriority="low" decoding="async"></a></li>
+            <li style="--pos:50% 50%"><a class="thumb" href="assets/works/black-grey.jpg" data-w="640" data-h="640" data-title="Valkyria" data-category="Čierno-biele tetovanie · rameno" data-description="Výraz, svetlo a hĺbka bez farby. Fotografia zachytáva prácu z viacerých uhlov."><img src="assets/works/sizes/black-grey-480.jpg" width="480" height="480" alt="Čierno-sivá bojovníčka so zvieracou hlavou; tri pohľady na tetovanie" fetchpriority="low" decoding="async"></a></li>
           </ul>
         </div>
       </div>
@@ -204,7 +201,7 @@
       <button class="round viewer-nav viewer-prev" id="viewer-prev" aria-label="Predchádzajúca práca"><svg class="icon"><use href="#i-left"/></svg></button>
       <button class="round viewer-nav viewer-next" id="viewer-next" aria-label="Ďalšia práca"><svg class="icon"><use href="#i-right"/></svg></button>
       <div class="viewer-top">
-        <span class="counter" id="viewer-count">01 / 05</span>
+        <span class="counter" id="viewer-count">01 / 02</span>
         <span class="sr-only" id="viewer-status" aria-live="polite"></span>
         <div class="viewer-tools">
           <button class="round" id="viewer-zoom" aria-pressed="false" aria-label="Priblížiť"><svg class="icon icon--in"><use href="#i-zoom-in"/></svg><svg class="icon icon--out"><use href="#i-zoom-out"/></svg></button>
