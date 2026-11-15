@@ -14,5 +14,13 @@
     "description": "Výraz, svetlo a hĺbka bez farby. Fotografia zachytáva prácu z viacerých uhlov.",
     "alt": "Čierno-sivá bojovníčka so zvieracou hlavou; tri pohľady na tetovanie",
     "crop": "50% 50%"
+  },
+  {
+    "photo": "assets/works/mwid8y34-vcvvig7f.jpg",
+    "title": "Anjel",
+    "category": "Čierno-biele tetovanie · rameno",
+    "description": "Čiernobiely portrét anjela s výrazným tieňovaním a kontrastmi, vytetovaný na ramene.",
+    "alt": "Čiernobiela postava anjela na ramene",
+    "crop": "50% 50%"
   }
 ]
