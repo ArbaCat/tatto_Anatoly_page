@@ -1,7 +1,7 @@
 [
   {
     "photo": "assets/works/colour.jpg",
-    "title": "Farba. Svetlo. Detail.",
+    "title": "Madonna ",
     "category": "Farba · predlaktie",
     "description": "Portrét v sýtej modrej a teplých zlatých tónoch.",
     "alt": "Farebný portrét s modrým závojom a zlatou svätožiarou na predlaktí",
@@ -9,34 +9,10 @@
   },
   {
     "photo": "assets/works/black-grey.jpg",
-    "title": "Čierna a sivá.",
-    "category": "Čierno-sivá kompozícia",
+    "title": "Valkyria",
+    "category": "Čierno-biele tetovanie · rameno",
     "description": "Výraz, svetlo a hĺbka bez farby. Fotografia zachytáva prácu z viacerých uhlov.",
     "alt": "Čierno-sivá bojovníčka so zvieracou hlavou; tri pohľady na tetovanie",
     "crop": "50% 50%"
-  },
-  {
-    "photo": "assets/works/ornament.jpg",
-    "title": "Ornament, ktorý patrí k telu.",
-    "category": "Folklórny ornament · chrbát",
-    "description": "Kvetinový motív rozprestretý cez ramená. Symetria, výrazná kontúra a farba.",
-    "alt": "Farebný symetrický kvetinový ornament na hornej časti chrbta",
-    "crop": "50% 52%"
-  },
-  {
-    "photo": "assets/works/japanese.jpg",
-    "title": "Líška a pivónie.",
-    "category": "Farebná kompozícia · rukáv",
-    "description": "Rozsiahlejšia farebná kompozícia. Celkový pohľad a detail z pôvodnej fotografie.",
-    "alt": "Farebný rukáv s líškou a pivóniami, celkový pohľad a detail",
-    "crop": "72% 50%"
-  },
-  {
-    "photo": "assets/works/neo.jpg",
-    "title": "Ilustrácia na koži.",
-    "category": "Farebný portrét · rameno",
-    "description": "Portrét v štýle ilustrácie. Teplé farby a výrazné obrysy.",
-    "alt": "Farebné tetovanie na ramene: portrét ženy v štýle ilustrácie.",
-    "crop": "50% 45%"
   }
 ]
